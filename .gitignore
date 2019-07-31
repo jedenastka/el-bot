@@ -1,0 +1,7 @@
+secrets.py
+__pycache__
+plugins/old
+el.log
+.vscode
+cache
+*.exe

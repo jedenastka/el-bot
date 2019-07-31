@@ -1,0 +1,25 @@
+{
+    "servers": {
+        "452408207428550668": {
+            "prefixes": ["el!", ">", "!"],
+            "commands": {
+                "poll": {
+                    "on": 1,
+                    "permissions": {
+                        "users": [368475654662127616]
+                    }
+                }
+            }
+        }
+    },
+    "default": {
+        "prefixes": ["el!", ">"]
+    },
+    "global": {},
+    "prefixes": ["el!", ">"],
+    "plugins": [
+        "poll", "text", "info", "logger", "random", "tts", "music", "util"
+    ],
+    "pluginPath": "plugins.",
+    "logfile": "log.json"
+}
