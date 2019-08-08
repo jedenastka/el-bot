@@ -15,7 +15,7 @@ class UtilPlugin(commands.Cog):
 
     @commands.command(name = 'ping', aliases = ['test'])
     async def _ping(self, ctx):
-        ctx.send("Pong!")
+        await ctx.send("Pong!")
     
 def setup(bot):
     bot.add_cog(UtilPlugin(bot))
