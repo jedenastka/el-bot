@@ -9,7 +9,7 @@ Author: Grzesiek11
 Version: v1.0.0
 """
 
-def appendToLog(fragment):
+def appendToLog(self, fragment):
     #with open(self.bot.data["logfile"], 'a') as log:
     #    log.write(fragment + '\n')
     log = json.load(open(self.bot.data["logfile"], 'a'))
@@ -60,7 +60,7 @@ class LoggerPlugin(commands.Cog):
             }
         }
         print(fragment)"""
-        appendToLog(f'''[{message.author}|{message.guild}|{message.channel}|{datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}] {message.content}''')
+        appendToLog(self, f'''[{message.author}|{message.guild}|{message.channel}|{datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}] {message.content}''')
 
 def setup(bot):
     bot.add_cog(LoggerPlugin(bot))
