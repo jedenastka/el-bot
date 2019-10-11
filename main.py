@@ -24,7 +24,7 @@ def prefix(bot, message):
                 prefixes = guildPrefixes
     return prefixes
 
-bot = commands.Bot(command_prefix = prefix)
+bot = commands.Bot(command_prefix = "el!")
 
 with open('data.json') as file:
     bot.data = json.load(file)
