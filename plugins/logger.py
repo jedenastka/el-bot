@@ -22,7 +22,7 @@ class LoggerPlugin(commands.Cog):
     # Message logging
     @commands.Cog.listener()
     async def on_message(self, message):
-        fragment = {
+        """fragment = {
             'type': 'message',
             'time': int(time.time()),
             'message': {
@@ -59,7 +59,7 @@ class LoggerPlugin(commands.Cog):
                 }
             }
         }
-        print(fragment)
+        print(fragment)"""
         appendToLog(f'''[{message.author}|{message.guild}|{message.channel}|{datetime.datetime.now().strftime('%d-%m-%Y %H:%M')}] {message.content}''')
 
 def setup(bot):
