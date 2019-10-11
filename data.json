@@ -22,5 +22,5 @@
         "poll", "text", "info", "logger", "random", "tts", "music", "util"
     ],
     "pluginPath": "plugins.",
-    "logfile": "log.json"
+    "logfile": "el.log"
 }

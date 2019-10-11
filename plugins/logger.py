@@ -10,10 +10,9 @@ Version: v1.0.0
 """
 
 def appendToLog(self, fragment):
-    #with open(self.bot.data["logfile"], 'a') as log:
-    #    log.write(fragment + '\n')
-    log = json.load(open(self.bot.data["logfile"], 'a'))
-    print(fragment)
+    log = open(self.bot.data["logfile"], 'a')
+    log.write(fragment + '\n')
+    log.close()
 
 class LoggerPlugin(commands.Cog):
     def __init__(self, bot):
