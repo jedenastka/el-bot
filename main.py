@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+import pymongo
 import json, os
 import secrets
 
@@ -28,10 +29,12 @@ bot = commands.Bot(command_prefix = prefix)
 with open('data.json') as file:
     bot.data = json.load(file)
 
+dbClient = pymongo.MongoClient()
+bot.db = dbClient['el']
+
 # when ready
 @bot.event
 async def on_ready():
-    print('======')
     print(f'Logged in as {bot.user.name} (ID: {bot.user.id})')
 
 # delete default help
@@ -57,16 +60,25 @@ async def _help(ctx, command = None):
 # check
 @bot.check
 async def globalCheck(ctx):
+    serverData = bot.db.servers.find_one({"id": ctx.guild})
+    if serverData == None:
+        serverData = bot.data["default"]
+    serverData.update(bot.data["global"])
     command = ctx.command
-    try:
-        commandData = bot.data["servers"][str(ctx.guild.id)]["commands"][command.name]
-        permissions = commandData["permissions"]
-        isOn = commandData["on"]
-        if not isOn:
+    if command.name in serverData["commands"]:
+        commandData = serverData["commands"][command.name]
+    else:
+        commandData = serverData["commandDefault"]
+    user = str(ctx.message.sender.id)
+    if not commandData["enabled"]:
+        return False
+    commandPermisions = commandData["permisions"]
+    if user in commandPermisions["users"]:
+        if commandPermisions["users"][user] == 0:
             return False
-        return True
-    except:
-        return True
+    elif commandPermisions["default"] == 0:
+        return False
+    return True
 
 # load plugins
 for plugin in bot.data["plugins"]:
