@@ -1,22 +1,23 @@
 {
-    "servers": {
-        "452408207428550668": {
-            "prefixes": ["el!", ">", "!"],
-            "commands": {
-                "poll": {
-                    "on": 1,
-                    "permissions": {
-                        "users": [368475654662127616]
-                    }
-                }
+    "default": {
+        "prefixes": ["el!"],
+        "language": "en",
+        "commands": {},
+        "commandDefault": {
+            "enabled": 1,
+            "permisions": {
+                "users": {},
+                "groups": {},
+                "default": 1
             }
+        },
+        "plugins": {},
+        "pluginDefault": {
+            "enabled": 1,
+            "data": {}
         }
     },
-    "default": {
-        "prefixes": ["el!", ">"]
-    },
     "global": {},
-    "prefixes": ["el!", ">"],
     "plugins": [
         "poll", "text", "info", "logger", "random", "tts", "music", "util"
     ],
