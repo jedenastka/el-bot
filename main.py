@@ -60,7 +60,7 @@ async def _help(ctx, command = None):
 # check
 @bot.check
 async def globalCheck(ctx):
-    serverData = bot.db.servers.find_one({"id": ctx.guild})
+    serverData = bot.db.servers.find_one({"id": ctx.guild.id})
     if serverData == None:
         serverData = bot.data["default"]
     serverData.update(bot.data["global"])
@@ -69,7 +69,7 @@ async def globalCheck(ctx):
         commandData = serverData["commands"][command.name]
     else:
         commandData = serverData["commandDefault"]
-    user = str(ctx.message.sender.id)
+    user = str(ctx.message.author.id)
     if not commandData["enabled"]:
         return False
     commandPermisions = commandData["permisions"]
