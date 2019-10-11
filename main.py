@@ -79,12 +79,12 @@ async def globalCheck(ctx):
     user = str(ctx.message.author.id)
     if not commandData["enabled"]:
         return False
-    commandPermisions = commandData["permisions"]
+    """commandPermisions = commandData["permisions"]
     if user in commandPermisions["users"]:
         if commandPermisions["users"][user] == 0:
             return False
     elif commandPermisions["default"] == 0:
-        return False
+        return False"""
     return True
 
 # load plugins
