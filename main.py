@@ -57,6 +57,13 @@ async def _help(ctx, command = None):
                 pass
     await ctx.send(embed = helpEmbed)
 
+@bot.command(name='config')
+async def _config(ctx):
+    server = ctx.guild
+    document = bot.data["default"]
+    document.update({"id": server.id})
+    bot.db.servers.insert_one(document)
+
 # check
 @bot.check
 async def globalCheck(ctx):
