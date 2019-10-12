@@ -60,16 +60,25 @@ async def _help(ctx, command = None):
 @bot.command(name='config')
 async def _config(ctx):
     server = ctx.guild
-    document = bot.data["default"]
-    document.update({"id": server.id})
+    document = {"id": server.id}
     bot.db.servers.insert_one(document)
+
+def dictReturnIfUsable(dictionary, *path):
+    try:
+        temp = dictionary
+        for i in path:
+            temp = temp[i]
+        return temp
+    except:
+        return None
 
 # check
 @bot.check
 async def globalCheck(ctx):
-    serverData = bot.db.servers.find_one({"id": ctx.guild.id})
-    if serverData == None:
-        serverData = bot.data["default"]
+    serverData = bot.data["default"]
+    serverDataDb = bot.db.servers.find_one({"id": ctx.guild.id})
+    if serverDataDb != None:
+        serverData.update(serverDataDb)
     serverData.update(bot.data["global"])
     command = ctx.command
     if command.name in serverData["commands"]:
@@ -77,14 +86,13 @@ async def globalCheck(ctx):
     else:
         commandData = serverData["commandDefault"]
     user = str(ctx.message.author.id)
+    commandPermisions = commandData.get("permisions")
     if not commandData["enabled"]:
         return False
-    """commandPermisions = commandData["permisions"]
-    if user in commandPermisions["users"]:
-        if commandPermisions["users"][user] == 0:
-            return False
-    elif commandPermisions["default"] == 0:
-        return False"""
+    if dictReturnIfUsable(commandPermisions, "users", user) == 0:
+        return False
+    elif dictReturnIfUsable(commandPermisions, "default") == 0:
+        return False
     return True
 
 # load plugins
