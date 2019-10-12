@@ -80,16 +80,14 @@ async def globalCheck(ctx):
     if serverDataDb != None:
         serverData.update(serverDataDb)
     serverData.update(bot.data["global"])
-    command = ctx.command
-    if command.name in serverData["commands"]:
-        commandData = serverData["commands"][command.name]
+    if ctx.command.name in serverData["commands"]:
+        commandData = serverData["commands"][ctx.command.name]
     else:
         commandData = serverData["commandDefault"]
-    user = str(ctx.message.author.id)
     commandPermisions = commandData.get("permisions")
     if not commandData["enabled"]:
         return False
-    if dictReturnIfUsable(commandPermisions, "users", user) == 0:
+    if dictReturnIfUsable(commandPermisions, "users", str(ctx.message.author.id)) == 0:
         return False
     elif dictReturnIfUsable(commandPermisions, "default") == 0:
         return False
