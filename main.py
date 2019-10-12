@@ -75,17 +75,18 @@ def dictReturnIfUsable(dictionary, *path):
 # check
 @bot.check
 async def globalCheck(ctx):
+    commandName = ctx.command.qualified_name
     serverData = bot.data["default"]
     serverDataDb = bot.db.servers.find_one({"id": ctx.guild.id})
     if serverDataDb != None:
         serverData.update(serverDataDb)
     serverData.update(bot.data["global"])
-    if ctx.command.name in serverData["commands"]:
-        commandData = serverData["commands"][ctx.command.name]
+    if commandName in serverData["commands"]:
+        commandData = serverData["commands"][commandName]
     else:
         commandData = serverData["commandDefault"]
     commandPermisions = commandData.get("permisions")
-    if not commandData["enabled"]:
+    if dictReturnIfUsable(commandData, "enabled") == 0:
         return False
     if dictReturnIfUsable(commandPermisions, "users", str(ctx.message.author.id)) == 0:
         return False
