@@ -99,6 +99,7 @@ async def globalCheck(ctx):
         for group in groups.items():
             if ctx.message.author.id in group[1]:
                 userGroups.append(group[0])
+        # this part is probably broken
         groupCheck = 0 if userGroups != [] else 1
         for group in userGroups:
             if groups[group] == 1:
