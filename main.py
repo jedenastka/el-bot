@@ -92,6 +92,19 @@ async def globalCheck(ctx):
         return False
     elif dictReturnIfUsable(commandPermisions, "default") == 0:
         return False
+    commandGroups = commandPermisions.get("groups")
+    if commandGroups != None:
+        groups = serverData["groups"]
+        userGroups = []
+        for group in groups.items():
+            if ctx.message.author.id in group[1]:
+                userGroups.append(group[0])
+        groupCheck = 0 if userGroups != [] else 1
+        for group in userGroups:
+            if groups[group] == 1:
+                groupCheck = 1
+        if not groupCheck:
+            return False
     return True
 
 # load plugins

@@ -15,7 +15,8 @@
         "pluginDefault": {
             "enabled": 1,
             "data": {}
-        }
+        },
+        "groups": {}
     },
     "global": {},
     "plugins": [
