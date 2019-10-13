@@ -72,40 +72,52 @@ def dictReturnIfUsable(dictionary, *path):
     except:
         return None
 
+def negateIfNotNone(statement):
+    return not statement and statement is not None
+
 # check
 @bot.check
 async def globalCheck(ctx):
     commandName = ctx.command.qualified_name
+    # get server data from default
     serverData = bot.data["default"]
+    # update it with database
     serverDataDb = bot.db.servers.find_one({"id": ctx.guild.id})
-    if serverDataDb != None:
+    if serverDataDb is not None:
         serverData.update(serverDataDb)
+    # and then with global
     serverData.update(bot.data["global"])
+    # check if command is specified, and if not - use default settings
     if commandName in serverData["commands"]:
         commandData = serverData["commands"][commandName]
     else:
         commandData = serverData["commandDefault"]
     commandPermisions = commandData.get("permisions")
-    if dictReturnIfUsable(commandData, "enabled") == 0:
+    # do not run when disabled
+    if negateIfNotNone(dictReturnIfUsable(commandData, "enabled")):
         return False
-    if dictReturnIfUsable(commandPermisions, "users", str(ctx.message.author.id)) == 0:
+    # when user is not allowed
+    if negateIfNotNone(dictReturnIfUsable(commandPermisions, "users", str(ctx.message.author.id))):
         return False
-    elif dictReturnIfUsable(commandPermisions, "default") == 0:
+    elif negateIfNotNone(dictReturnIfUsable(commandPermisions, "default")):
         return False
     commandGroups = commandPermisions.get("groups")
-    if commandGroups != None:
+    # and when group is not allowed
+    if commandGroups is not None and commandGroups != {}:
         groups = serverData["groups"]
         userGroups = []
+        # get all groups checked user is in
         for group in groups.items():
             if ctx.message.author.id in group[1]:
                 userGroups.append(group[0])
-        # this part is probably broken
-        groupCheck = 0 if userGroups != [] else 1
-        for group in userGroups:
-            if groups[group] == 1:
-                groupCheck = 1
-        if not groupCheck:
-            return False
+        # and if he is in any, preform the check
+        if userGroups != []:
+            groupCheck = 0
+            for group in userGroups:
+                if commandGroups.get(group):
+                    groupCheck = 1
+            if not groupCheck:
+                return False
     return True
 
 # load plugins
