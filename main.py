@@ -87,12 +87,14 @@ async def globalCheck(ctx):
         serverData.update(serverDataDb)
     # and then with global
     serverData.update(bot.data["global"])
-    # check if command is specified, and if not - use default settings
+    # check if command is specified
     if commandName in serverData["commands"]:
         commandData = serverData["commands"][commandName]
     else:
+        # fallback to default if not
         commandData = serverData["commandDefault"]
     commandPermisions = commandData.get("permisions")
+    commandGroups = commandPermisions.get("groups")
     # do not run when disabled
     if negateIfNotNone(dictReturnIfUsable(commandData, "enabled")):
         return False
@@ -100,24 +102,15 @@ async def globalCheck(ctx):
     if negateIfNotNone(dictReturnIfUsable(commandPermisions, "users", str(ctx.message.author.id))):
         return False
     elif negateIfNotNone(dictReturnIfUsable(commandPermisions, "default")):
+        # fallback
         return False
-    commandGroups = commandPermisions.get("groups")
-    # and when group is not allowed
-    if commandGroups is not None and commandGroups != {}:
+    elif commandGroups is not None and commandGroups != {}:
+        # and when group is not allowed
         groups = serverData["groups"]
-        userGroups = []
-        # get all groups checked user is in
         for group in groups.items():
             if ctx.message.author.id in group[1]:
-                userGroups.append(group[0])
-        # and if he is in any, preform the check
-        if userGroups != []:
-            groupCheck = 0
-            for group in userGroups:
-                if commandGroups.get(group):
-                    groupCheck = 1
-            if not groupCheck:
-                return False
+                if not group[0]:
+                    return False
     return True
 
 # load plugins
