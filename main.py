@@ -7,6 +7,23 @@ import secrets
 # make cache directory
 os.makedirs('cache', exist_ok=True)
 
+def notIfNotNone(statement):
+    return not statement and statement is not None
+
+def empty(obj):
+    return tuple(obj) == ()
+
+def getServerData(serverId):
+    # get server data from default
+    serverData = bot.data["default"]
+    # update it with database
+    serverDataDb = bot.db.servers.find_one({"id": serverId})
+    if serverDataDb is not None:
+        serverData.update(serverDataDb)
+    # and then with global
+    serverData.update(bot.data["global"])
+    return serverData
+
 # help embed generator
 def generateHelp(commandsArray):
     helpText = '**Commands:**\n\n'
@@ -57,11 +74,23 @@ async def _help(ctx, command = None):
                 pass
     await ctx.send(embed = helpEmbed)
 
-@bot.command(name='config')
-async def _config(ctx):
+@bot.group(name='permissions', aliases=['p'])
+async def _permissions(ctx):
     server = ctx.guild
     document = {"id": server.id}
     bot.db.servers.insert_one(document)
+
+@_permissions.command(name='command', aliases=['c'])
+async def _command(ctx, commandName, operation=None, *args):
+    if operation is None:
+        serverData = getServerData(ctx.guild.id)
+        permisions = multiget(serverData, "commands", commandName, "permisions")
+        defaultPermisions = multiget(serverData, "commandDefault", "permisions")
+        if permisions is not None:
+            permisions.update(defaultPermisions)
+        else:
+            permisions = defaultPermisions
+        await ctx.send(str(permisions))
 
 def multiget(dictionary, *path):
     temp = dictionary
@@ -71,25 +100,12 @@ def multiget(dictionary, *path):
             break
     return temp
 
-def notIfNotNone(statement):
-    return not statement and statement is not None
-
-def empty(obj):
-    return tuple(obj) == ()
-
 # check
 @bot.check
 async def globalCheck(ctx):
     commandName = ctx.command.qualified_name
     user = ctx.message.author.id
-    # get server data from default
-    serverData = bot.data["default"]
-    # update it with database
-    serverDataDb = bot.db.servers.find_one({"id": ctx.guild.id})
-    if serverDataDb is not None:
-        serverData.update(serverDataDb)
-    # and then with global
-    serverData.update(bot.data["global"])
+    serverData = getServerData(ctx.guild.id)
     # check if command is specified
     if commandName in serverData["commands"]:
         commandData = serverData["commands"][commandName]
