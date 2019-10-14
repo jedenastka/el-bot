@@ -63,16 +63,15 @@ async def _config(ctx):
     document = {"id": server.id}
     bot.db.servers.insert_one(document)
 
-def dictReturnIfUsable(dictionary, *path):
-    try:
-        temp = dictionary
-        for i in path:
-            temp = temp[i]
-        return temp
-    except:
-        return None
+def multiget(dictionary, *path):
+    temp = dictionary
+    for i in path:
+        temp = temp.get(i)
+        if temp is None:
+            break
+    return temp
 
-def negateIfNotNone(statement):
+def notIfNotNone(statement):
     return not statement and statement is not None
 
 # check
@@ -96,21 +95,21 @@ async def globalCheck(ctx):
     commandPermisions = commandData.get("permisions")
     commandGroups = commandPermisions.get("groups")
     # do not run when disabled
-    if negateIfNotNone(dictReturnIfUsable(commandData, "enabled")):
+    if notIfNotNone(multiget(commandData, "enabled")):
         return False
     # when user is not allowed
-    if negateIfNotNone(dictReturnIfUsable(commandPermisions, "users", str(ctx.message.author.id))):
-        return False
-    elif negateIfNotNone(dictReturnIfUsable(commandPermisions, "default")):
-        # fallback
+    if notIfNotNone(multiget(commandPermisions, "users", str(ctx.message.author.id))):
         return False
     elif commandGroups is not None and commandGroups != {}:
         # and when group is not allowed
         groups = serverData["groups"]
         for group in groups.items():
             if ctx.message.author.id in group[1]:
-                if not group[0]:
+                if not commandGroups[group[0]]:
                     return False
+    elif notIfNotNone(commandPermisions.get("default")):
+        # fallback
+        return False
     return True
 
 # load plugins
