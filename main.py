@@ -96,6 +96,8 @@ async def _command(ctx, commandName, operation=None, *args):
         await ctx.send(str(permissions))
     elif operation == 'enable':
         bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 1}}, upsert=False)
+    elif operation == 'disable':
+        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 0}}, upsert=False)
 
 def multiget(dictionary, *path):
     temp = dictionary
