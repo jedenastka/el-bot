@@ -106,9 +106,13 @@ async def globalCheck(ctx):
     if commandGroups is not None and not empty(commandGroups):
         groups = serverData["groups"]
         # for every group
+        userGroups = []
         for group in groups.items():
             if user in group[1]:
-                groupCheck = commandGroups[group[0]]
+                userGroups.append(group[0])
+        for group in commandGroups:
+            if group["name"] in userGroups:
+                groupCheck = group["allow"]
                 break
     # when user is not allowed
     userCheck = multiget(commandPermisions, "users", str(user))
