@@ -65,17 +65,17 @@ async def _help(ctx, command = None):
 
 def getServerData(serverId):
     # get server data from default
-    serverData = bot.data["default"]
+    serverData = bot.data["default"].copy()
     # update it with database
     serverDataDb = bot.db.servers.find_one({"id": serverId})
     if serverDataDb is not None:
         serverData.update(serverDataDb)
     # and then with global
     serverData.update(bot.data["global"])
-    return serverData.copy()
+    return serverData
 
 def getCommandData(serverData, commandName):
-    commandData = multiget(serverData, "commandDefault")
+    commandData = multiget(serverData, "commandDefault").copy()
     commandDataUpdate = multiget(serverData, "commands", commandName)
     if commandDataUpdate is not None:
         commandData.update(commandDataUpdate)
