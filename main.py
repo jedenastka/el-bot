@@ -13,17 +13,6 @@ def notIfNotNone(statement):
 def empty(obj):
     return tuple(obj) == ()
 
-def getServerData(serverId):
-    # get server data from default
-    serverData = bot.data["default"]
-    # update it with database
-    serverDataDb = bot.db.servers.find_one({"id": serverId})
-    if serverDataDb is not None:
-        serverData.update(serverDataDb)
-    # and then with global
-    serverData.update(bot.data["global"])
-    return serverData
-
 # help embed generator
 def generateHelp(commandsArray):
     helpText = '**Commands:**\n\n'
@@ -74,23 +63,39 @@ async def _help(ctx, command = None):
                 pass
     await ctx.send(embed = helpEmbed)
 
+def getServerData(serverId):
+    # get server data from default
+    serverData = bot.data["default"]
+    # update it with database
+    serverDataDb = bot.db.servers.find_one({"id": serverId})
+    if serverDataDb is not None:
+        serverData.update(serverDataDb)
+    # and then with global
+    serverData.update(bot.data["global"])
+    return serverData.copy()
+
+def getCommandData(serverData, commandName):
+    commandData = multiget(serverData, "commandDefault")
+    commandDataUpdate = multiget(serverData, "commands", commandName)
+    if commandDataUpdate is not None:
+        commandData.update(commandDataUpdate)
+    return commandData
+
 @bot.group(name='permissions', aliases=['p'])
 async def _permissions(ctx):
     server = ctx.guild
     document = {"id": server.id}
-    bot.db.servers.insert_one(document)
+    if not bot.db.servers.find_one(document):
+        bot.db.servers.insert_one(document)
 
 @_permissions.command(name='command', aliases=['c'])
 async def _command(ctx, commandName, operation=None, *args):
     if operation is None:
         serverData = getServerData(ctx.guild.id)
-        permisions = multiget(serverData, "commands", commandName, "permisions")
-        defaultPermisions = multiget(serverData, "commandDefault", "permisions")
-        if permisions is not None:
-            permisions.update(defaultPermisions)
-        else:
-            permisions = defaultPermisions
-        await ctx.send(str(permisions))
+        permissions = getCommandData(serverData, commandName).get("permissions")
+        await ctx.send(str(permissions))
+    elif operation == 'enable':
+        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 1}}, upsert=False)
 
 def multiget(dictionary, *path):
     temp = dictionary
@@ -106,18 +111,13 @@ async def globalCheck(ctx):
     commandName = ctx.command.qualified_name
     user = ctx.message.author.id
     serverData = getServerData(ctx.guild.id)
-    # check if command is specified
-    if commandName in serverData["commands"]:
-        commandData = serverData["commands"][commandName]
-    else:
-        # fallback to default if not
-        commandData = serverData["commandDefault"]
-    commandPermisions = commandData.get("permisions")
+    commandData = getCommandData(serverData, commandName)
+    commandPermissions = commandData.get("permissions")
     # do not run when disabled
-    if notIfNotNone(multiget(commandData, "enabled")):
+    if notIfNotNone(commandData.get("enabled")):
         return False
     # do group check
-    commandGroups = commandPermisions.get("groups")
+    commandGroups = commandPermissions.get("groups")
     groupCheck = None
     if commandGroups is not None and not empty(commandGroups):
         groups = serverData["groups"]
@@ -131,11 +131,11 @@ async def globalCheck(ctx):
                 groupCheck = group["allow"]
                 break
     # when user is not allowed
-    userCheck = multiget(commandPermisions, "users", str(user))
+    userCheck = multiget(commandPermissions, "users", str(user))
     if userCheck is not None:
         if not userCheck:
             return False
-        elif notIfNotNone(commandPermisions.get("default")):
+        elif notIfNotNone(commandPermissions.get("default")):
             # fallback
             return False
     elif notIfNotNone(groupCheck):

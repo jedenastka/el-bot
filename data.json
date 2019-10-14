@@ -5,7 +5,7 @@
         "commands": {},
         "commandDefault": {
             "enabled": 1,
-            "permisions": {
+            "permissions": {
                 "users": {},
                 "groups": [],
                 "default": 1
