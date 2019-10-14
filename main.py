@@ -74,10 +74,14 @@ def multiget(dictionary, *path):
 def notIfNotNone(statement):
     return not statement and statement is not None
 
+def empty(obj):
+    return tuple(obj) == ()
+
 # check
 @bot.check
 async def globalCheck(ctx):
     commandName = ctx.command.qualified_name
+    user = ctx.message.author.id
     # get server data from default
     serverData = bot.data["default"]
     # update it with database
@@ -93,22 +97,29 @@ async def globalCheck(ctx):
         # fallback to default if not
         commandData = serverData["commandDefault"]
     commandPermisions = commandData.get("permisions")
-    commandGroups = commandPermisions.get("groups")
     # do not run when disabled
     if notIfNotNone(multiget(commandData, "enabled")):
         return False
-    # when user is not allowed
-    if notIfNotNone(multiget(commandPermisions, "users", str(ctx.message.author.id))):
-        return False
-    elif commandGroups is not None and commandGroups != {}:
-        # and when group is not allowed
+    # do group check
+    commandGroups = commandPermisions.get("groups")
+    groupCheck = None
+    if commandGroups is not None and not empty(commandGroups):
         groups = serverData["groups"]
+        # for every group
         for group in groups.items():
-            if ctx.message.author.id in group[1]:
-                if not commandGroups[group[0]]:
-                    return False
-    elif notIfNotNone(commandPermisions.get("default")):
-        # fallback
+            if user in group[1]:
+                groupCheck = commandGroups[group[0]]
+                break
+    # when user is not allowed
+    userCheck = multiget(commandPermisions, "users", str(user))
+    if userCheck is not None:
+        if not userCheck:
+            return False
+        elif notIfNotNone(commandPermisions.get("default")):
+            # fallback
+            return False
+    elif notIfNotNone(groupCheck):
+        # and when group is not allowed
         return False
     return True
 
