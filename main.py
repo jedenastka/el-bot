@@ -81,6 +81,9 @@ def getCommandData(serverData, commandName):
         commandData.update(commandDataUpdate)
     return commandData
 
+def updateServersDb(serverID, query):
+    bot.db.servers.update_one({'id': serverID}, query, upsert=True)
+
 @bot.group(name='permissions', aliases=['p'])
 async def _permissions(ctx):
     server = ctx.guild
@@ -95,17 +98,17 @@ async def _command(ctx, commandName, operation=None, *args):
         permissions = getCommandData(serverData, commandName).get("permissions")
         await ctx.send(str(permissions))
     elif operation == 'enable':
-        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 1}}, upsert=True)
+        updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.enabled': 1}})
     elif operation == 'disable':
-        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 0}}, upsert=True)
+        updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.enabled': 0}})
     elif operation == 'users':
         if args[1] == 'enable':
-            bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 1}}, upsert=True)
+            updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 1}})
         elif args[1] == 'disable':
-            bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 0}}, upsert=True)
+            updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 0}})
         elif args[1] == 'default':
             # doesn't work, throws exception
-            #bot.db.servers.update_one({'id': ctx.guild.id}, {"$unset": {f'commands.{commandName}.permissions.users.{args[0]}'}}, upsert=False)
+            #updateServersDb(ctx.guild.id, {"$unset": {f'commands.{commandName}.permissions.users.{args[0]}'}})
             pass
         else:
             pass
