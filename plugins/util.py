@@ -23,7 +23,7 @@ class UtilPlugin(commands.Cog):
             cookie = os.popen("fortune").read()
             if len(cookie) < 2000:
                 break
-        await ctx.send()
+        await ctx.send(cookie)
     
 def setup(bot):
     bot.add_cog(UtilPlugin(bot))
