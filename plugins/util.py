@@ -21,6 +21,7 @@ class UtilPlugin(commands.Cog):
     async def _fortune(self, ctx):
         while True:
             cookie = os.popen("fortune").read()
+            cookie = f"```{cookie}```"
             if len(cookie) < 2000:
                 break
         await ctx.send(cookie)
