@@ -95,9 +95,20 @@ async def _command(ctx, commandName, operation=None, *args):
         permissions = getCommandData(serverData, commandName).get("permissions")
         await ctx.send(str(permissions))
     elif operation == 'enable':
-        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 1}}, upsert=False)
+        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 1}}, upsert=True)
     elif operation == 'disable':
-        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 0}}, upsert=False)
+        bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.enabled': 0}}, upsert=True)
+    elif operation == 'users':
+        if args[1] == 'enable':
+            bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 1}}, upsert=True)
+        elif args[1] == 'disable':
+            bot.db.servers.update_one({'id': ctx.guild.id}, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 0}}, upsert=True)
+        elif args[1] == 'default':
+            # doesn't work, throws exception
+            #bot.db.servers.update_one({'id': ctx.guild.id}, {"$unset": {f'commands.{commandName}.permissions.users.{args[0]}'}}, upsert=False)
+            pass
+        else:
+            pass
 
 def multiget(dictionary, *path):
     temp = dictionary
