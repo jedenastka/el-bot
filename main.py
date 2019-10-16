@@ -63,26 +63,34 @@ async def _help(ctx, command = None):
                 pass
     await ctx.send(embed = helpEmbed)
 
-def getServerData(serverId):
+def getServerData(serverID: int):
     # get server data from default
     serverData = bot.data["default"].copy()
     # update it with database
-    serverDataDb = bot.db.servers.find_one({"id": serverId})
+    serverDataDb = bot.db.servers.find_one({"id": serverID})
     if serverDataDb is not None:
         serverData.update(serverDataDb)
     # and then with global
     serverData.update(bot.data["global"])
     return serverData
 
-def getCommandData(serverData, commandName):
+def getCommandData(serverData, commandName: str):
     commandData = multiget(serverData, "commandDefault").copy()
     commandDataUpdate = multiget(serverData, "commands", commandName)
     if commandDataUpdate is not None:
         commandData.update(commandDataUpdate)
     return commandData
 
-def updateServersDb(serverID, query):
+def updateServersDb(serverID: int, query: dict):
     bot.db.servers.update_one({'id': serverID}, query, upsert=True)
+
+def updatePermissions(serverID: int, where: dict, how: str):
+    if how == 'enable':
+        updateServersDb(serverID, {"$set": {where: 1}})
+    elif how == 'disable':
+        updateServersDb(serverID, {"$set": {where: 1}})
+    elif how == 'default':
+        updateServersDb(serverID, {"$unset": {where: ''}})
 
 @bot.group(name='permissions', aliases=['p'])
 async def _permissions(ctx):
@@ -92,26 +100,15 @@ async def _permissions(ctx):
         bot.db.servers.insert_one(document)
 
 @_permissions.command(name='command', aliases=['c'])
-async def _command(ctx, commandName, operation=None, *args):
-    if operation is None:
+async def _command(ctx, commandName, *args):
+    if args[0] is None:
         serverData = getServerData(ctx.guild.id)
         permissions = getCommandData(serverData, commandName).get("permissions")
         await ctx.send(str(permissions))
-    elif operation == 'enable':
-        updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.enabled': 1}})
-    elif operation == 'disable':
-        updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.enabled': 0}})
-    elif operation == 'users':
-        if args[1] == 'enable':
-            updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 1}})
-        elif args[1] == 'disable':
-            updateServersDb(ctx.guild.id, {"$set": {f'commands.{commandName}.permissions.users.{args[0]}': 0}})
-        elif args[1] == 'default':
-            # doesn't work, throws exception
-            #updateServersDb(ctx.guild.id, {"$unset": {f'commands.{commandName}.permissions.users.{args[0]}'}})
-            pass
-        else:
-            pass
+    elif args[0] == 'users':
+        updatePermissions(ctx.guild.id, {f'commands.{commandName}.permissions.users.{args[1]}'}, args[2])
+    else:
+        updatePermissions(ctx.guild.id, {f'commands.{commandName}.permissions.users.{args[0]}'}, args[1])
 
 def multiget(dictionary, *path):
     temp = dictionary
