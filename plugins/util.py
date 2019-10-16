@@ -16,6 +16,14 @@ class UtilPlugin(commands.Cog):
     @commands.command(name = 'ping', aliases = ['test'])
     async def _ping(self, ctx):
         await ctx.send("Pong!")
+
+    @commands.command(name = 'fortune')
+    async def _fortune(self, ctx):
+        while True:
+            cookie = os.popen("fortune").read()
+            if len(cookie) < 2000:
+                break
+        await ctx.send()
     
 def setup(bot):
     bot.add_cog(UtilPlugin(bot))
