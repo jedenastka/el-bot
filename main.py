@@ -84,11 +84,11 @@ def getCommandData(serverData, commandName: str):
 def updateServersDb(serverID: int, query: dict):
     bot.db.servers.update_one({'id': serverID}, query, upsert=True)
 
-def updatePermissions(serverID: int, where: dict, how: str):
+def updatePermissions(serverID: int, where: str, how: str):
     if how == 'enable':
         updateServersDb(serverID, {"$set": {where: 1}})
     elif how == 'disable':
-        updateServersDb(serverID, {"$set": {where: 1}})
+        updateServersDb(serverID, {"$set": {where: 0}})
     elif how == 'default':
         updateServersDb(serverID, {"$unset": {where: ''}})
 
@@ -106,9 +106,9 @@ async def _command(ctx, commandName, *args):
         permissions = getCommandData(serverData, commandName).get("permissions")
         await ctx.send(str(permissions))
     elif args[0] == 'users':
-        updatePermissions(ctx.guild.id, {f'commands.{commandName}.permissions.users.{args[1]}'}, args[2])
+        updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.users.{args[1]}', args[2])
     else:
-        updatePermissions(ctx.guild.id, {f'commands.{commandName}.permissions.users.{args[0]}'}, args[1])
+        updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.users.{args[0]}', args[1])
 
 def multiget(dictionary, *path):
     temp = dictionary
