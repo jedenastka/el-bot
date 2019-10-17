@@ -5,3 +5,4 @@ el.log
 .vscode
 cache
 *.exe
+*.swp
