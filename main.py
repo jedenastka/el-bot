@@ -105,10 +105,21 @@ async def _command(ctx, commandName, *args):
         serverData = getServerData(ctx.guild.id)
         permissions = getCommandData(serverData, commandName).get("permissions")
         await ctx.send(str(permissions))
-    elif args[0] == 'users':
+    elif args[0] == 'user':
         updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.users.{args[1]}', args[2])
     else:
         updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.users.{args[0]}', args[1])
+
+@_permissions.command(name='group', aliases=['g'])
+async def _group(ctx, group, *args):
+    if args[0] == 'create':
+        updateServersDb(ctx.guild.id, {"$set": {f'commands.groups.{group}': []}})
+    elif args[0] == 'remove':
+        pass
+    elif args[0] == 'add':
+        pass
+    elif args[0] == 'kick':
+        pass
 
 def multiget(dictionary, *path):
     temp = dictionary
