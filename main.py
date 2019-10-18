@@ -115,7 +115,7 @@ async def _group(ctx, group, *args):
     if args[0] == 'create':
         updateServersDb(ctx.guild.id, {"$set": {f'commands.groups.{group}': []}})
     elif args[0] == 'remove':
-        pass
+        updateServersDb(ctx.guild.id, {"$unset": {f'commands.groups.{group}': ''}})
     elif args[0] == 'add':
         pass
     elif args[0] == 'kick':
