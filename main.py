@@ -113,11 +113,11 @@ async def _command(ctx, commandName, *args):
 @_permissions.command(name='group', aliases=['g'])
 async def _group(ctx, group, *args):
     if args[0] == 'create':
-        updateServersDb(ctx.guild.id, {"$set": {f'commands.groups.{group}': []}})
+        updateServersDb(ctx.guild.id, {"$set": {f'groups.{group}': []}})
     elif args[0] == 'remove':
-        updateServersDb(ctx.guild.id, {"$unset": {f'commands.groups.{group}': ''}})
+        updateServersDb(ctx.guild.id, {"$unset": {f'groups.{group}': ''}})
     elif args[0] == 'add':
-        pass
+        updateServersDb(ctx.guild.id, {"$addToSet": {f'groups.{group}': int(args[1])}})
     elif args[0] == 'kick':
         pass
 
