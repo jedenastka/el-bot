@@ -107,6 +107,8 @@ async def _command(ctx, commandName, *args):
         await ctx.send(str(permissions))
     elif args[0] == 'user':
         updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.users.{args[1]}', args[2])
+    elif args[0] == 'group':
+        updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.groups.{args[1]}', args[2])
     else:
         updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.users.{args[0]}', args[1])
 
