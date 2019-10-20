@@ -63,6 +63,7 @@ async def _help(ctx, command = None):
                 pass
     await ctx.send(embed = helpEmbed)
 
+# Code related to permissions got a little messy. Requires cleanup.
 def getServerData(serverID: int):
     # get server data from default
     serverData = bot.data["default"].copy()
@@ -113,8 +114,13 @@ async def _command(ctx, commandName, *args):
         updatePermissions(ctx.guild.id, f'commands.{commandName}.permissions.users.{args[0]}', args[1])
 
 @_permissions.command(name='group', aliases=['g'])
-async def _group(ctx, group, *args):
-    if args[0] == 'create':
+async def _group(ctx, group = None, *args):
+    serverData = getServerData(ctx.guild.id)
+    if group is None:
+        await ctx.send(serverData.get("groups"))
+    elif empty(args):
+        await ctx.send(multiget(serverData, "groups", group))
+    elif args[0] == 'create':
         updateServersDb(ctx.guild.id, {"$set": {f'groups.{group}': []}})
     elif args[0] == 'remove':
         updateServersDb(ctx.guild.id, {"$unset": {f'groups.{group}': ''}})
