@@ -2,7 +2,7 @@
 
 **El** is Discord bot made by Grzesiek11 as side project to learn Python. Ideas of this bot are making it's code avalible for everyone and giving all functionality for free.
 
-It's meant to be all-in-one, containing things like music bot, ulities, moderation tools etc. in future. El is also built for modularity and configurability - everyone can write plugins and submit them via pull request or use only on his instance, server admins can configure most of functionality aspects etc.
+It's meant to be all-in-one, containing things like music bot, utilities, moderation tools etc. in future. El is also built for modularity and configurability - everyone can write plugins and submit them via pull request or use only on his instance, server admins can configure most of functionality aspects etc.
 
 ## Rewrite
 
