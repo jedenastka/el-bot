@@ -35,7 +35,7 @@ bot = commands.Bot(command_prefix = "el!")
 with open('data.json') as file:
     bot.data = json.load(file)
 
-dbClient = pymongo.MongoClient()
+dbClient = pymongo.MongoClient(secrets.mongoUri if secrets.mongoUri else None)
 bot.db = dbClient['el']
 
 # when ready
