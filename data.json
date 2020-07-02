@@ -18,7 +18,7 @@
     "global": {},
     "prefixes": ["el!", ">"],
     "plugins": [
-        "poll", "text", "info", "logger", "random", "tts", "music", "util", "counting", "weather"
+        "poll", "text", "info", "random", "tts", "music", "util", "counting", "weather"
     ],
     "pluginPath": "plugins.",
     "logfile": "log.json"
