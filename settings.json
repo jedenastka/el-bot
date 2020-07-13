@@ -1,0 +1,6 @@
+{
+    "secretsFile": "secrets.json",
+    "database": "el",
+    "pluginDir": "plugins",
+    "initPlugins": ["utils"]
+}

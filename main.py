@@ -5,21 +5,24 @@ from pymongo import MongoClient
 import json
 import importlib
 
-with open('secrets.json') as f_secrets:
+with open('settings.json') as f_settings:
+    settings = json.load(f_settings)
+
+with open(settings['secretsFile']) as f_secrets:
     secrets = json.load(f_secrets)
 
 bot = discord.Client()
 
 mongo = MongoClient(secrets['mongoURI'])
-bot.db = mongo['el']
+bot.db = mongo[settings['database']]
 
 prefix = bot.db['servers'].find_one({'_id': 'default'})['prefixes'][0]
 
 events = []
-plugins = ['utils']
+plugins = settings['initPlugins']
 
 for pluginName in plugins:
-    plugin = importlib.import_module(f"plugins.{pluginName}")
+    plugin = importlib.import_module(f"{settings['pluginDir']}.{pluginName}")
     events += plugin.events
 
 @bot.event
