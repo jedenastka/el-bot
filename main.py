@@ -1,18 +1,38 @@
-from discord.ext import commands
+import discord
 import json
 from pymongo import MongoClient
 
 with open('secrets.json') as f_secrets:
     secrets = json.load(f_secrets)
 
-def prefix(bot, message):
-    return bot.db['servers'].find_one({'_id': 'default'})['prefixes']
-
-bot = commands.Bot(command_prefix=prefix)
-
 mongo = MongoClient(secrets['mongoURI'])
-bot.db = mongo['el']
+db = mongo['el']
 
-bot.load_extension('plugins.utils')
+prefix = db['servers'].find_one({'_id': 'default'})['prefixes'][0]
+
+bot = discord.Client()
+
+async def c_ping(message):
+    await message.channel.send('Pong!')
+
+events = [
+    {
+        'type': 'command',
+        'name': 'ping',
+        'alias': ['test'],
+        'callable': c_ping
+    }
+]
+
+@bot.event
+async def on_message(message):
+    for event in events:
+        if event['type'] == 'command':
+            if message.content.startswith(prefix): # Add some complex prefix getting based on various things here
+                if message.content[len(prefix):] == event['alias'] + [event['name']]:
+                    await event['callable'](message)
+        elif event['type'] == 'onMessage':
+            await event['callable'](message)
+
 
 bot.run(secrets['token'])
