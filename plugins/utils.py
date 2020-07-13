@@ -1,4 +1,4 @@
-async def c_ping(message):
+async def c_ping(bot, message):
     await message.channel.send('Pong!')
 
 events = [
