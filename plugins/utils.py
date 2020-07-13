@@ -1,5 +1,5 @@
-async def c_ping(bot, message):
-    await message.channel.send('Pong!')
+async def c_ping(bot, message, text = 'Pong!'):
+    await message.channel.send(text)
 
 events = [
     {

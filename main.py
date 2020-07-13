@@ -27,16 +27,23 @@ def getCommand(message, event):
     prefixes = bot.db['servers'].find_one({'_id': 'default'})['prefixes']
     for prefix in prefixes:
         if message.content.startswith(prefix):
-            return message.content[len(prefix):]
+            commandString = message.content[len(prefix):]
+            splittedCommand = commandString.split(' ')
+            command = {
+                'command': splittedCommand[0],
+                'args': splittedCommand[1:]
+            }
+            return command
     return None
 
 @bot.event
 async def on_message(message):
     for event in events:
         if event['type'] == 'command':
-            if getCommand(message, event) is not None:
-                if getCommand(message, event) in event['alias'] + [event['name']]:
-                    await event['callable'](bot, message)
+            command = getCommand(message, event)
+            if command is not None:
+                if command['command'] in event['alias'] + [event['name']]:
+                    await event['callable'](bot, message, *command['args'])
         elif event['type'] == 'onMessage':
             await event['callable'](bot, message)
 
