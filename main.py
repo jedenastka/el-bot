@@ -29,10 +29,9 @@ async def on_message(message):
     for event in events:
         if event['type'] == 'command':
             if message.content.startswith(prefix): # Add some complex prefix getting based on various things here
-                if message.content[len(prefix):] == event['alias'] + [event['name']]:
+                if message.content[len(prefix):] in event['alias'] + [event['name']]:
                     await event['callable'](message)
         elif event['type'] == 'onMessage':
             await event['callable'](message)
-
 
 bot.run(secrets['token'])
