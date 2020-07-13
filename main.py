@@ -1,6 +1,9 @@
 import discord
-import json
+
 from pymongo import MongoClient
+
+import json
+import importlib
 
 with open('secrets.json') as f_secrets:
     secrets = json.load(f_secrets)
@@ -12,17 +15,12 @@ prefix = db['servers'].find_one({'_id': 'default'})['prefixes'][0]
 
 bot = discord.Client()
 
-async def c_ping(message):
-    await message.channel.send('Pong!')
+events = []
+plugins = ['utils']
 
-events = [
-    {
-        'type': 'command',
-        'name': 'ping',
-        'alias': ['test'],
-        'callable': c_ping
-    }
-]
+for pluginName in plugins:
+    plugin = importlib.import_module(f"plugins.{pluginName}")
+    events += plugin.events
 
 @bot.event
 async def on_message(message):
