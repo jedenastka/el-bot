@@ -98,16 +98,18 @@ def getCommand(message, event):
 
 @bot.event
 async def on_message(message):
+    context = Context(message, bot)
+
     for event in events:
 
         if event['type'] == 'command':
             command = getCommand(message, event)
             if command is not None:
                 if command['command'] in event['alias'] + [event['name']]:
-                    await event['callable'](bot, message, *command['args'])
+                    await event['callable'](context, *command['args'])
         
         elif event['type'] == 'onMessage':
-            await event['callable'](bot, message)
+            await event['callable'](context)
 
 # Run the bot
 

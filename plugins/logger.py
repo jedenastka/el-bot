@@ -1,5 +1,5 @@
-async def log(bot, message):
-    print(message.content)
+async def log(ctx):
+    print(ctx.message.content)
 
 events = [
     {
