@@ -75,7 +75,7 @@ def getPrefix(message, all=False):
             return prefix
     return None
 
-def getCommand(message, event):
+def getCommand(message, commandEvent):
     prefix = getPrefix(message)
     if prefix is not None:
         commandString = message.content[len(prefix):]
@@ -83,11 +83,32 @@ def getCommand(message, event):
         try:
             splittedCommand = splitNoBreak(commandString)
         except Exception:
+            print('Error: unclosed quote')
             return None
 
+        tmp = [commandEvent]
+        commandEnd = 0
+        i = 1
+
+        for segment in splittedCommand:
+            if tmp is None:
+                break
+            for event in tmp:
+                if segment in [event['name']] + event['alias']:
+                    tmp = event.get('subcommands')
+                    commandEnd = i
+                    break
+            i += 1
+        
+        if commandEnd == 0:
+            return None
+
+        print(commandEnd)
+        return None
+
         command = {
-            'command': splittedCommand[0],
-            'args': splittedCommand[1:]
+            'command': splittedCommand[:commandEnd],
+            'args': splittedCommand[commandEnd:]
         }
 
         return command
@@ -106,9 +127,12 @@ async def on_message(message):
 
         elif event['type'] == 'command':
             command = getCommand(message, event)
-            if command is not None:
-                if command['command'] in event['alias'] + [event['name']]:
-                    await event['callable'](context, *command['args'])
+            print(command)
+            print(event)
+            #if command is not None:
+            #    for subcommand in command['command'][1:]:
+            #        event = next(subcommandEvent for subcommandEvent in event['subcommands'] if subcommand in [subcommandEvent['name']] + subcommandEvent['alias'])
+            #    await event['callable'](context, *command['args'])
 
 # Run the bot
 

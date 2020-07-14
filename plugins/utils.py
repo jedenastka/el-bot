@@ -6,6 +6,7 @@ events = [
         'type': 'command',
         'name': 'ping',
         'alias': ['test'],
-        'callable': c_ping
+        'callable': c_ping,
+        'subcommands': []
     }
 ]
