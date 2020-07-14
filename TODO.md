@@ -2,7 +2,7 @@
 
 ## Priority 1 - now
 
-- [ ] Propertly parse arguments - respect quotes
+- [x] Propertly parse arguments - respect quotes
 - [ ] Subcommands
 
 ## Priority 2 - someday
