@@ -17,4 +17,9 @@
 - [ ] `helpers` submodule - wrapping everything I hate about developing Discord bots (emojis! wrr)
 - [ ] Develop more plugins
 - [ ] Web panel
+- [ ] Script and package
 - [ ] Document everything
+
+## Priority 4 - ever
+
+- [ ] Make El platform independent
