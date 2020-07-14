@@ -35,9 +35,6 @@ for pluginName in plugins:
 
 # Helper functions
 
-def getPrefix():
-    pass
-
 def splitNoBreak(string: str):
     splittedString = []
     tmp = ''
@@ -60,26 +57,40 @@ def splitNoBreak(string: str):
         if (ch != ' ' or inQuotes) and not chIsQuote:
             tmp += ch
         
-        if nextCh == '' or (ch == ' ' and not inQuotes):
+        if (ch == ' ' and not inQuotes) or nextCh == '':
             splittedString.append(tmp)
             tmp = ''
+        
+        if nextCh == '' and inQuotes:
+            raise Exception('Unclosed quote')
     
     return splittedString
 
-def getCommand(message, event):
+def getPrefix(message, all=False):
     prefixes = bot.db['servers'].find_one({'_id': 'default'})['prefixes']
+    if all:
+        return prefixes
     for prefix in prefixes:
         if message.content.startswith(prefix):
-            commandString = message.content[len(prefix):]
+            return prefix
+    return None
 
+def getCommand(message, event):
+    prefix = getPrefix(message)
+    if prefix is not None:
+        commandString = message.content[len(prefix):]
+
+        try:
             splittedCommand = splitNoBreak(commandString)
+        except Exception:
+            return None
 
-            command = {
-                'command': splittedCommand[0],
-                'args': splittedCommand[1:]
-            }
+        command = {
+            'command': splittedCommand[0],
+            'args': splittedCommand[1:]
+        }
 
-            return command
+        return command
 
     return None
 
