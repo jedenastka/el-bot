@@ -2,5 +2,5 @@
     "secretsFile": "secrets.json",
     "database": "el",
     "pluginDir": "plugins",
-    "initPlugins": ["utils", "logger"]
+    "initPlugins": ["utils", "logger", "codestats"]
 }
