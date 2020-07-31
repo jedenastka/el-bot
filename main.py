@@ -94,7 +94,7 @@ def getPrefix(message, all=False):
             return prefix
     return None
 
-def getCommand(message, event):
+def getCommand(message):
     prefix = getPrefix(message)
     if prefix is not None:
         commandString = message.content[len(prefix):]
@@ -116,15 +116,14 @@ def getCommand(message, event):
 async def on_message(message):
     context = Context(message, bot)
 
+    command, args = getCommand(message)
+    print(f"{command} {args}")
+    if command != {}:
+        await command['callable'](context, *args)
+
     for event in events:
         if event['type'] == 'onMessage':
             await event['callable'](context)
-
-        elif event['type'] == 'command':
-            command, args = getCommand(message, event)
-            if command != {}:
-                if command == event:
-                    await event['callable'](context, *args)
 
 # Run the bot
 
