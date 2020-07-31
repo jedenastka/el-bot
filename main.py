@@ -69,7 +69,7 @@ def splitNoBreak(string: str):
 def findCommand(parts):
     commands = events
     
-    i = 0
+    i = 1
     
     for part in parts:
         for command in commands:
@@ -79,6 +79,7 @@ def findCommand(parts):
                     commands = command.get('subcommands')
                     if commands is None or commands == []:
                         return (command, parts[i:])
+                    break
         
         i += 1
     
