@@ -66,6 +66,24 @@ def splitNoBreak(string: str):
     
     return splittedString
 
+def findCommand(parts):
+    commands = events
+    
+    i = 0
+    
+    for part in parts:
+        for command in commands:
+            if command['type'] == 'command':
+                if part in command['aliases'] + [command['name']]:
+
+                    commands = command.get('subcommands')
+                    if commands is None or commands == []:
+                        return (command, parts[i:])
+        
+        i += 1
+    
+    return ({}, [])
+
 def getPrefix(message, all=False):
     prefixes = bot.db['servers'].find_one({'_id': 'default'})['prefixes']
     if all:
@@ -81,18 +99,15 @@ def getCommand(message, event):
         commandString = message.content[len(prefix):]
 
         try:
-            splittedCommand = splitNoBreak(commandString)
+            parts = splitNoBreak(commandString)
         except Exception:
-            return None
+            return ({}, [])
 
-        command = {
-            'command': splittedCommand[0],
-            'args': splittedCommand[1:]
-        }
+        command, args = findCommand(parts)
 
-        return command
+        return command, args
 
-    return None
+    return ({}, [])
 
 # Listen on Discord events and pass them to registered internal events
 
@@ -105,10 +120,10 @@ async def on_message(message):
             await event['callable'](context)
 
         elif event['type'] == 'command':
-            command = getCommand(message, event)
-            if command is not None:
-                if command['command'] in event['alias'] + [event['name']]:
-                    await event['callable'](context, *command['args'])
+            command, args = getCommand(message, event)
+            if command != {}:
+                if command == event:
+                    await event['callable'](context, *args)
 
 # Run the bot
 
