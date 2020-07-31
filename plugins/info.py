@@ -1,7 +1,16 @@
 import discord
 
-async def c_info_guild(ctx, guild=None):
+async def c_info_guild(ctx, guildID=None):
     guild = ctx.message.guild
+    try:
+        guildID = int(guildID)
+        guild = ctx.bot.get_guild(guildID)
+        if guild is None:
+            raise
+    except:
+        await ctx.message.channel.send(f"Can't find guild `{guildID}`.")
+        return
+    
     region = {
         discord.VoiceRegion.amsterdam: 'Amsterdam',
         discord.VoiceRegion.brazil: 'Brazil',
