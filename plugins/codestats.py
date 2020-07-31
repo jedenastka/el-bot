@@ -16,7 +16,7 @@ events = [
     {
         'type': 'command',
         'name': 'codestats',
-        'alias': ['cs'],
+        'aliases': ['cs'],
         'callable': c_codestats
     }
 ]
