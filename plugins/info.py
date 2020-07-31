@@ -1,16 +1,17 @@
 import discord
 
-async def c_info_guild(ctx, guildID=None):
-    guild = ctx.message.guild
-    try:
-        guildID = int(guildID)
-        guild = ctx.bot.get_guild(guildID)
-        if guild is None:
-            raise
-    except:
-        await ctx.message.channel.send(f"Can't find guild `{guildID}`.")
-        return
-    
+async def c_info_guild(ctx, guild=None):
+    if guild is not None:
+        try:
+            tmp = ctx.bot.get_guild(int(guild))
+        except:
+            await ctx.message.channel.send(f"Can't find guild `{guild}`.")
+            return
+        else:
+            guild = tmp
+    else:
+        guild = ctx.message.guild
+
     region = {
         discord.VoiceRegion.amsterdam: 'Amsterdam',
         discord.VoiceRegion.brazil: 'Brazil',
@@ -35,6 +36,7 @@ async def c_info_guild(ctx, guildID=None):
         discord.VoiceRegion.vip_us_east: 'United States (East, VIP)',
         discord.VoiceRegion.vip_us_west: 'United States (West, VIP)'
     }
+
     embed = discord.Embed(
         title=guild.name,
         description=f"""**Created:** {guild.created_at.strftime(r'%d.%m.%Y %H:%M:%S.%f')}
@@ -51,7 +53,15 @@ async def c_info_guild(ctx, guildID=None):
     await ctx.message.channel.send(embed=embed)
 
 async def c_info_user(ctx, user=None):
-    pass
+    user = ctx.message.author
+    try:
+        user = int(user)
+        guild = ctx.bot.get_guild(guildID)
+        if guild is None:
+            raise
+    except:
+        await ctx.message.channel.send(f"Can't find guild `{guildID}`.")
+        return
 
 async def c_info_message(ctx, message):
     pass
