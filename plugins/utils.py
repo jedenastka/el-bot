@@ -1,11 +1,11 @@
 async def c_ping(ctx, text = 'Pong!'):
     await ctx.message.channel.send(text)
 
-async def foo(ctx):
-    await ctx.message.channel.send("foo")
+async def foo(ctx, arg = ""):
+    await ctx.message.channel.send(f"foo {arg}")
 
-async def bar(ctx):
-    await ctx.message.channel.send("bar")
+async def bar(ctx, arg = ""):
+    await ctx.message.channel.send(f"bar {arg}")
 
 events = [
     {

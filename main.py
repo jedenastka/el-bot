@@ -69,21 +69,24 @@ def splitNoBreak(string: str):
 def findCommand(parts):
     commands = events
     
+    tmpCommand = {}
     i = 1
     
     for part in parts:
         for command in commands:
-            if command['type'] == 'command':
-                if part in command['aliases'] + [command['name']]:
+            if command['type'] == 'command' \
+                and part in command['aliases'] + [command['name']]:
 
-                    commands = command.get('subcommands')
-                    if commands is None or commands == []:
-                        return (command, parts[i:])
-                    break
+                tmpCommand = command
+                commands = command.get('subcommands', [])
+                if commands == []:
+                    return (tmpCommand, parts[i:])
+                
+                break
         
         i += 1
     
-    return ({}, [])
+    return (tmpCommand, [])
 
 def getPrefix(message, all=False):
     prefixes = bot.db['servers'].find_one({'_id': 'default'})['prefixes']
