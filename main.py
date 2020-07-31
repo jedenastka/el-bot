@@ -69,24 +69,28 @@ def splitNoBreak(string: str):
 def findCommand(parts):
     commands = events
     
-    tmpCommand = {}
     i = 1
     
     for part in parts:
         for command in commands:
-            if command['type'] == 'command' \
-                and part in command['aliases'] + [command['name']]:
+            if command['type'] == 'command' and part in command['aliases'] + [command['name']]:
 
-                tmpCommand = command
                 commands = command.get('subcommands', [])
-                if commands == []:
-                    return (tmpCommand, parts[i:])
+                
+                lastSubcommand = True
+                for partLeft in parts[i:]:
+                    for commandLeft in commands:
+                        if partLeft in commandLeft['aliases'] + [commandLeft['name']]:
+                            lastSubcommand = False
+                
+                if commands == [] or lastSubcommand:
+                    return (command, parts[i:])
                 
                 break
         
         i += 1
     
-    return (tmpCommand, [])
+    return ({}, [])
 
 def getPrefix(message, all=False):
     prefixes = bot.db['servers'].find_one({'_id': 'default'})['prefixes']
@@ -119,14 +123,14 @@ def getCommand(message):
 async def on_message(message):
     context = Context(message, bot)
 
+    for event in events:
+        if event['type'] == 'onMessage':
+            await event['callable'](context)
+
     command, args = getCommand(message)
     print(f"{command} {args}")
     if command != {}:
         await command['callable'](context, *args)
-
-    for event in events:
-        if event['type'] == 'onMessage':
-            await event['callable'](context)
 
 # Run the bot
 
