@@ -34,7 +34,9 @@ async def c_info_guild(ctx, guild=None):
         **Region:** {region.get(guild.region, str(guild.region))}
         **Member count:** {guild.member_count}
         **Channel count:** Text - {len(guild.text_channels)}, Voice - {len(guild.voice_channels)}, Categories - {len(guild.categories)}, Total - {len(guild.channels)}
-        **Emoji count:** {len(guild.emojis)}"""
+        **Role count:** {len(guild.roles)}
+        **Emoji count:** {len(guild.emojis)}
+        **Boost count:** {guild.premium_subscription_count}"""
     )
     embed.set_thumbnail(url = guild.icon_url)
     await ctx.message.channel.send(embed=embed)
