@@ -66,6 +66,32 @@ def splitNoBreak(string: str):
     
     return splittedString
 
+def findCommand(parts):
+    commands = events
+    
+    i = 1
+    
+    for part in parts:
+        for command in commands:
+            if command['type'] == 'command' and part in command['aliases'] + [command['name']]:
+
+                commands = command.get('subcommands', [])
+                
+                lastSubcommand = True
+                for partLeft in parts[i:]:
+                    for commandLeft in commands:
+                        if partLeft in commandLeft['aliases'] + [commandLeft['name']]:
+                            lastSubcommand = False
+                
+                if commands == [] or lastSubcommand:
+                    return (command, parts[i:])
+                
+                break
+        
+        i += 1
+    
+    return ({}, [])
+
 def getPrefix(message, all=False):
     prefixes = bot.db['servers'].find_one({'_id': 'default'})['prefixes']
     if all:
@@ -75,24 +101,21 @@ def getPrefix(message, all=False):
             return prefix
     return None
 
-def getCommand(message, event):
+def getCommand(message):
     prefix = getPrefix(message)
     if prefix is not None:
         commandString = message.content[len(prefix):]
 
         try:
-            splittedCommand = splitNoBreak(commandString)
+            parts = splitNoBreak(commandString)
         except Exception:
-            return None
+            return ({}, [])
 
-        command = {
-            'command': splittedCommand[0],
-            'args': splittedCommand[1:]
-        }
+        command, args = findCommand(parts)
 
-        return command
+        return command, args
 
-    return None
+    return ({}, [])
 
 # Listen on Discord events and pass them to registered internal events
 
@@ -104,11 +127,10 @@ async def on_message(message):
         if event['type'] == 'onMessage':
             await event['callable'](context)
 
-        elif event['type'] == 'command':
-            command = getCommand(message, event)
-            if command is not None:
-                if command['command'] in event['alias'] + [event['name']]:
-                    await event['callable'](context, *command['args'])
+    command, args = getCommand(message)
+    print(f"{command} {args}")
+    if command != {}:
+        await command['callable'](context, *args)
 
 # Run the bot
 

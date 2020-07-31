@@ -5,7 +5,7 @@ events = [
     {
         'type': 'command',
         'name': 'ping',
-        'alias': ['test'],
+        'aliases': ['test'],
         'callable': c_ping
     }
 ]
