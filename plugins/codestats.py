@@ -4,7 +4,9 @@ import discord
 
 import csplot
 
-async def c_codestats(ctx, user: str, lastDays = 7):
+async def c_codestats(ctx, user = '', lastDays = 7):
+    if user == '':
+        user = ctx.message.author.name
     try:
         csplot.xpPlot(user, datetime.datetime.today() - datetime.timedelta(days=int(lastDays) - 1), f"tmp/codestats_{user}.png")
     except Exception:
