@@ -128,7 +128,6 @@ async def on_message(message):
             await event['callable'](context)
 
     command, args = getCommand(message)
-    print(f"{command} {args}")
     if command != {}:
         await command['callable'](context, *args)
 
