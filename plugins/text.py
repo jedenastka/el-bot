@@ -31,7 +31,8 @@ async def c_emotize(ctx, *text):
         ')': ':leftwards_arrow_with_hook:',
         '-': ':heavy_minus_sign:',
         '+': ':heavy_plus_sign:',
-        '.': ':white_circle:'
+        '.': ':white_circle:',
+        '\n': '\n'
     }
 
     emotizedText = ''
