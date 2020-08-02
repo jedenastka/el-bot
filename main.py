@@ -131,6 +131,22 @@ async def on_message(message):
     if command != {}:
         await command['callable'](context, *args)
 
+@bot.event
+async def on_message_delete(message):
+    context = Context(message, bot)
+
+    for event in events:
+        if event['type'] == 'onDelete':
+            await event['callable'](context)
+
+@bot.event
+async def on_message_edit(before, after):
+    context = Context(after, bot)
+
+    for event in events:
+        if event['type'] == 'onEdit':
+            await event['callable'](context, before)
+
 # Run the bot
 
 bot.run(secrets['token'])
