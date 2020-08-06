@@ -1,3 +1,5 @@
+import datetime
+
 import requests
 
 import discord
@@ -71,11 +73,20 @@ async def c_weather(ctx, city):
     embed.set_thumbnail(url = f"https://openweathermap.org/img/wn/{icon}@2x.png")
     await ctx.send(embed=embed)
 
+async def c_thunder(ctx):
+    await ctx.send(f"http://images.blitzortung.org/Images/image_b_pl.png?mapId={int(datetime.datetime.now().timestamp() * 1000)}")
+
 events = [
     {
         'type': 'command',
         'name': 'weather',
         'aliases': [],
         'callable': c_weather
+    },
+    {
+        'type': 'command',
+        'name': 'thunder',
+        'aliases': [],
+        'callable': c_thunder
     }
 ]
