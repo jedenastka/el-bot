@@ -22,7 +22,7 @@ bot = discord.Client()
 # Initialize database
 
 mongo = MongoClient(secrets['mongoURI'])
-bot.db = mongo[settings['database']]
+db = mongo[settings['database']]
 
 # Load plugins
 
@@ -121,7 +121,7 @@ def getCommand(message):
 
 @bot.event
 async def on_message(message):
-    context = Context(message, bot)
+    context = Context(message, bot, db, settings, secrets)
 
     for event in events:
         if event['type'] == 'onMessage':
@@ -133,7 +133,7 @@ async def on_message(message):
 
 @bot.event
 async def on_message_delete(message):
-    context = Context(message, bot)
+    context = Context(message, bot, db, settings, secrets)
 
     for event in events:
         if event['type'] == 'onDelete':
@@ -141,11 +141,11 @@ async def on_message_delete(message):
 
 @bot.event
 async def on_message_edit(before, after):
-    context = Context(after, bot)
+    context = Context(None, bot, db, settings, secrets)
 
     for event in events:
         if event['type'] == 'onEdit':
-            await event['callable'](context, before)
+            await event['callable'](context, before, after)
 
 # Run the bot
 

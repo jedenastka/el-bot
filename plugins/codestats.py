@@ -10,9 +10,9 @@ async def c_codestats(ctx, user = '', lastDays = 7):
     try:
         csplot.xpPlot(user, datetime.datetime.today() - datetime.timedelta(days=int(lastDays) - 1), f"tmp/codestats_{user}.png")
     except Exception:
-        await ctx.message.channel.send(f"There is no user {user}...")
+        await ctx.send(f"There is no user {user}...")
     else:
-        await ctx.message.channel.send(file=discord.File(fp=open(f"tmp/codestats_{user}.png", 'rb')))
+        await ctx.send(file=discord.File(fp=open(f"tmp/codestats_{user}.png", 'rb')))
 
 events = [
     {

@@ -1,13 +1,13 @@
 import random
 
 async def c_random(ctx, start, stop):
-    await ctx.message.channel.send(random.randrange(int(start), int(stop)))
+    await ctx.send(random.randrange(int(start), int(stop)))
 
 async def c_random_coin(ctx):
-    await ctx.message.channel.send(random.choice(('Heads!', 'Tails!')))
+    await ctx.send(random.choice(('Heads!', 'Tails!')))
 
 async def c_random_choice(ctx, *options):
-    await ctx.message.channel.send(random.choice(options))
+    await ctx.send(random.choice(options))
 
 events = [
     {

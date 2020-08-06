@@ -1,5 +1,5 @@
 async def c_ping(ctx):
-    await ctx.message.channel.send('Pong!')
+    await ctx.send('Pong!')
 
 events = [
     {

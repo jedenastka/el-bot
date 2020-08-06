@@ -11,8 +11,8 @@ async def logMessages(ctx):
 async def logDeletes(ctx):
     log(f"[DELETION] [{datetime.datetime.now().strftime(r'%d.%m.%Y %H:%M:%S')}] [{ctx.message.channel.id} {ctx.message.author.id}] {ctx.message.content}")
 
-async def logEdits(ctx, before):
-    log(f"[EDIT] [{datetime.datetime.now().strftime(r'%d.%m.%Y %H:%M:%S')}] [{ctx.message.channel.id} {ctx.message.author.id}] {before.content} [CHANGED TO] {ctx.message.content}")
+async def logEdits(ctx, before, after):
+    log(f"[EDIT] [{datetime.datetime.now().strftime(r'%d.%m.%Y %H:%M:%S')}] [{before.channel.id} {before.author.id}] {before.content} [CHANGED TO] {after.content}")
 
 events = [
     {

@@ -5,7 +5,7 @@ async def c_info_guild(ctx, guild=None):
         try:
             tmp = ctx.bot.get_guild(int(guild))
         except:
-            await ctx.message.channel.send(f"Can't find guild `{guild}`.")
+            await ctx.send(f"Can't find guild `{guild}`.")
             return
         else:
             guild = tmp
@@ -50,7 +50,7 @@ async def c_info_guild(ctx, guild=None):
         **Boost count:** {guild.premium_subscription_count}"""
     )
     embed.set_thumbnail(url = guild.icon_url)
-    await ctx.message.channel.send(embed=embed)
+    await ctx.send(embed=embed)
 
 async def c_info_user(ctx, user=None):
     user = ctx.message.author
@@ -60,7 +60,7 @@ async def c_info_user(ctx, user=None):
         if guild is None:
             raise
     except:
-        await ctx.message.channel.send(f"Can't find guild `{guildID}`.")
+        await ctx.send(f"Can't find guild `{guildID}`.")
         return
 
 async def c_info_message(ctx, message):

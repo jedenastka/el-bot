@@ -1,6 +1,6 @@
 async def c_say(ctx, *text):
     text = ' '.join(text)
-    await ctx.message.channel.send(text)
+    await ctx.send(text)
 
 async def c_emotize(ctx, *text):
     text = ' '.join(text)
@@ -44,14 +44,14 @@ async def c_emotize(ctx, *text):
         elif ch in special.keys():
             emotizedText += special[ch]
 
-    await ctx.message.channel.send(emotizedText)
+    await ctx.send(emotizedText)
 
 async def c_space(ctx, *text):
     text = ' '.join(text)
     spacedText = ''
     for ch in text:
         spacedText += ch + " "
-    await ctx.message.channel.send(spacedText)
+    await ctx.send(spacedText)
 
 events = [
     {
