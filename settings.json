@@ -2,5 +2,5 @@
     "secretsFile": "secrets.json",
     "database": "el",
     "pluginDir": "plugins",
-    "initPlugins": ["utils", "logger", "codestats", "random", "info", "text", "apropo"]
+    "initPlugins": ["utils", "logger", "codestats", "random", "info", "text", "apropo", "weather"]
 }
