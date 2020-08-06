@@ -73,8 +73,8 @@ async def c_weather(ctx, city):
     embed.set_thumbnail(url = f"https://openweathermap.org/img/wn/{icon}@2x.png")
     await ctx.send(embed=embed)
 
-async def c_thunder(ctx):
-    await ctx.send(f"http://images.blitzortung.org/Images/image_b_pl.png?mapId={int(datetime.datetime.now().timestamp() * 1000)}")
+async def c_thunder(ctx, code='pl'):
+    await ctx.send(f"http://images.blitzortung.org/Images/image_b_{code}.png?mapId={int(datetime.datetime.now().timestamp() * 1000)}")
 
 events = [
     {
