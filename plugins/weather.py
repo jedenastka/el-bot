@@ -5,8 +5,6 @@ import requests
 
 import discord
 
-import cairosvg
-
 async def c_weather(ctx, place):
     r = requests.get('https://api.openweathermap.org/data/2.5/weather', params={'q': place, 'appid': ctx.secrets['openweathermap'], 'units': 'metric'})
     response = r.json()
@@ -152,7 +150,7 @@ async def c_aweather(ctx, place):
         
         **Temperature:** {temperature}\u00b0C
         **RealFeel\u00ae:** {realfeel}\u00b0C
-        *RealFeel Shade\u2122:** {realfeelshade}\u00b0C
+        **RealFeel Shade\u2122:** {realfeelshade}\u00b0C
 
         **Pressure:** {pressure} mbar
         **Humidity:** {humidity}% ({humidityIndoors}% indoors)
