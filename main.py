@@ -93,7 +93,7 @@ def findCommand(parts):
     return ({}, [])
 
 def getPrefix(message, all=False):
-    prefixes = db['servers'].find_one({'_id': 'default'})['prefixes']
+    prefixes = db['system'].find_one({'special': 'default'})['bot']['prefixes']
     if all:
         return prefixes
     for prefix in prefixes:
