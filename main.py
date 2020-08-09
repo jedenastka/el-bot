@@ -155,6 +155,39 @@ async def on_reaction_add(reaction, user):
         if event['type'] == 'onReaction':
             await event['callable'](context, reaction, user)
 
+@bot.event
+async def on_guild_join(guild):
+    overlay = db['system'].find_one({'special': 'default'})
+    overlay.pop('_id')
+    overlay.pop('special')
+
+    if db['servers'].find_one({'id': guild.id}) is None:
+        db['servers'].insert_one({'id': guild.id, **overlay})
+
+    context = Context(None, bot, db, settings, secrets)
+
+    for event in events:
+        if event['type'] == 'onJoin':
+            await event['callable'](context, guild)
+
+@bot.event
+async def on_ready():
+    overlay = db['system'].find_one({'special': 'default'})
+    if overlay is None:
+        exit(1)
+    overlay.pop('_id')
+    overlay.pop('special')
+
+    for guild in bot.guilds:
+        if db['servers'].find_one({'id': guild.id}) is None:
+            db['servers'].insert_one({'id': guild.id, **overlay})
+
+    context = Context(None, bot, db, settings, secrets)
+
+    for event in events:
+        if event['type'] == 'onReady':
+            await event['callable'](context)
+
 # Run the bot
 
 bot.run(secrets['token'])
