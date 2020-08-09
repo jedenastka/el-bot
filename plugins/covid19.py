@@ -70,7 +70,7 @@ async def c_covid_poland(ctx, province=None):
     died = int(data['Liczba zgonów'].replace(' ', ''))
     
     embed = discord.Embed(
-        title=tag,
+        title=f"COVID-19 in {'Poland' if province is None else province}",
         description=f"""**Confirmed:** {'{0:,}'.format(confirmed).replace(',', ' ')}
         **Deaths:** {'{0:,}'.format(died).replace(',', ' ')}"""
     )
