@@ -60,12 +60,10 @@ async def c_covid_poland(ctx, province=None):
     
     data = None
     for potentialData in provinces:
-        print(potentialData)
         if potentialData['Województwo'] == tag:
             data = potentialData
             break
     if data is None:
-        print("popsuło się :)")
         return
 
     confirmed = int(data['Liczba'].replace(' ', ''))
