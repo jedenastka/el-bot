@@ -1,6 +1,10 @@
+import json
+
 import requests
 
 import discord
+
+from bs4 import BeautifulSoup
 
 async def c_covid(ctx, country=None):
     embed = discord.Embed()
@@ -44,11 +48,49 @@ async def c_covid(ctx, country=None):
     **Active:** {'{0:,}'.format(active).replace(',', ' ')}"""
     await ctx.send(embed=embed)
 
+async def c_covid_poland(ctx, province=None):
+    r = requests.get('https://www.gov.pl/web/koronawirus/wykaz-zarazen-koronawirusem-sars-cov-2')
+    doc = BeautifulSoup(r.text, 'html.parser')
+    provinces = json.loads(json.loads(doc.find(id='registerData').string)['parsedData'])
+
+    if province is None:
+        tag = 'Cała Polska'
+    else:
+        tag = province
+    
+    data = None
+    for potentialData in provinces:
+        print(potentialData)
+        if potentialData['Województwo'] == tag:
+            data = potentialData
+            break
+    if data is None:
+        print("popsuło się :)")
+        return
+
+    confirmed = int(data['Liczba'].replace(' ', ''))
+    died = int(data['Liczba zgonów'].replace(' ', ''))
+    
+    embed = discord.Embed(
+        title=tag,
+        description=f"""**Confirmed:** {'{0:,}'.format(confirmed).replace(',', ' ')}
+        **Deaths:** {'{0:,}'.format(died).replace(',', ' ')}"""
+    )
+    await ctx.send(embed=embed)
+
 events = [
     {
         'type': 'command',
         'name': 'covid19',
         'aliases': ['c19', 'covid'],
-        'callable': c_covid
+        'callable': c_covid,
+        'subcommands': [
+            {
+                'type': 'command',
+                'name': 'poland',
+                'aliases': [],
+                'callable': c_covid_poland
+            }
+        ]
     }
 ]
