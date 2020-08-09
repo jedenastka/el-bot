@@ -5,7 +5,7 @@ import requests
 
 import discord
 
-async def c_xkcd(ctx, comic):
+async def c_xkcd(ctx, comic='random'):
     if comic == 'random':
         r = requests.get('https://c.xkcd.com/random/comic/')
         comicId = re.search('https:\/\/xkcd.com\/(\d+)\/', r.url).group(1)
@@ -30,7 +30,7 @@ async def c_xkcd(ctx, comic):
     response = r.json()
 
     embed = discord.Embed(
-        title=response['safe_title']
+        title=f"{comicId} - {response['safe_title']}"
     )
     embed.set_image(url=response['img'])
     embed.set_author(name='xkcd.com', url=f"https://xkcd.com/{comicId}/", icon_url='https://grzesiek11.stary.pc.pl/el/xkcd2.png')
