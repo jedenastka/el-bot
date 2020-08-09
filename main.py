@@ -147,6 +147,14 @@ async def on_message_edit(before, after):
         if event['type'] == 'onEdit':
             await event['callable'](context, before, after)
 
+@bot.event
+async def on_reaction_add(reaction, user):
+    context = Context(None, bot, db, settings, secrets)
+
+    for event in events:
+        if event['type'] == 'onReaction':
+            await event['callable'](context, reaction, user)
+
 # Run the bot
 
 bot.run(secrets['token'])
