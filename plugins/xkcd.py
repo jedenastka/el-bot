@@ -12,7 +12,9 @@ async def c_xkcd(ctx, comic='random'):
     elif comic == 'latest':
         r = requests.get('https://xkcd.com/info.0.json')
         comicId = r.json()['num']
-    elif not comic.isdigit():
+    elif comic.isdigit():
+        comicId = comic
+    else:
         r = requests.get('https://xkcd.com/archive/')
         comics = re.findall('<a href="\/(\d+)\/" title="\d+-\d+-\d+">(.+?)<\/a><br\/>', r.text)
 
