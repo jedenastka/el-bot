@@ -1,8 +1,11 @@
 import datetime
+import os
+
+os.makedirs('fs/var/logger', exist_ok=True)
 
 def log(text):
     print(text)
-    with open('el.log', 'a') as logfile:
+    with open('fs/var/logger/el.log', 'a') as logfile:
         logfile.write(f"{text}\n")
 
 async def logMessages(ctx):
