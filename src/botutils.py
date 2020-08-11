@@ -23,8 +23,37 @@ def mergeDicts(local, overlay):
     
     return local
 
+def getDefaultDoc(path=[]):
+    doc = db['system'].find_one({'special': 'default'})
+
+    doc.pop('_id')
+    doc.pop('special')
+    
+    for element in path:
+        doc = doc.get(element, {})
+        if doc == {}:
+            break
+    
+    return doc
+
+def getSettingsDoc(path=[]):
+    doc = db['system'].find_one({'special': 'settings'})
+
+    doc.pop('_id')
+    doc.pop('special')
+    
+    for element in path:
+        doc = doc.get(element, {})
+        if doc == {}:
+            break
+    
+    return doc
+
 def getOverlayDoc(path=[]):
-    doc = db['system'].find_one({'special': 'global'})
+    doc = db['system'].find_one({'special': 'overlay'})
+
+    doc.pop('_id')
+    doc.pop('special')
     
     for element in path:
         doc = doc.get(element, {})
@@ -35,6 +64,9 @@ def getOverlayDoc(path=[]):
 
 def getServerDoc(serverId: int, path=[], addOverlay=False):
     doc = db['servers'].find_one({'id': serverId})
+
+    doc.pop('_id')
+
     if addOverlay:
         doc = mergeDicts(doc, getOverlayDoc())
     

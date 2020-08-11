@@ -1,6 +1,7 @@
 from classes import Context
 from instances import bot, db, settings, secrets, events
 from parser import getCommand
+from botutils import getDefaultDoc
 
 async def on_message(message):
     context = Context(message, bot, db, settings, secrets)
@@ -49,11 +50,11 @@ async def on_guild_join(guild):
             await event['callable'](context, guild)
 
 async def on_ready():
-    overlay = db['system'].find_one({'special': 'default'})
-    if overlay is None:
-        exit(1)
-    overlay.pop('_id')
-    overlay.pop('special')
+    for default in settings['systemDbDefault']:
+        if db['system'].find_one({'special': default['special']}) is None:
+            db['system'].insert_one(default)
+    
+    overlay = getDefaultDoc()
 
     for guild in bot.guilds:
         if db['servers'].find_one({'id': guild.id}) is None:
