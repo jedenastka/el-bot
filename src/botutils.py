@@ -78,8 +78,6 @@ def getServerDoc(serverId: int, path=[], addOverlay=False):
     return doc
 
 def updateServerDoc(serverId: int, doc: dict, path=[]):
-    path.reverse()
-    for element in path:
-        doc = {element: doc}
+    dotPath = '.'.join(path)
 
-    db['servers'].update_one({'id': serverId}, {'$set': doc})
+    db['servers'].update_one({'id': serverId}, {'$set': {dotPath: doc}})
