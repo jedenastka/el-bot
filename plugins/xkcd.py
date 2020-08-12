@@ -1,11 +1,13 @@
 import sys
 import re
 
-import requests
-
 import discord
 
-viewers = {}
+from botutils import getServerDoc, updateServerDoc, mergeDicts
+
+import requests
+
+dbPath = ['plugins', 'xkcd']
 
 async def c_xkcd(ctx, comic='random'):
     if comic == 'random':
@@ -41,7 +43,8 @@ async def c_xkcd(ctx, comic='random'):
     embed.set_footer(text=response['alt'])
 
     message = await ctx.send(embed=embed)
-    viewers.update({message.id: {'id': int(comicId), 'user': ctx.message.author.id}})
+    #viewers.update({message.id: {'id': int(comicId), 'user': ctx.message.author.id}})
+    updateServerDoc(ctx.message.guild.id, {**getServerDoc(ctx.message.guild.id, dbPath + ['viewers']), str(message.id): {'id': int(comicId), 'user': ctx.message.author.id}}, dbPath + ['viewers'])
     await message.add_reaction('\N{LEFTWARDS ARROW WITH HOOK}')
     await message.add_reaction('\N{LEFTWARDS BLACK ARROW}')
     await message.add_reaction('\N{TWISTED RIGHTWARDS ARROWS}')
@@ -51,8 +54,8 @@ async def c_xkcd(ctx, comic='random'):
 async def viewerInteraction(ctx, reaction, user):
     if user.id == ctx.bot.user.id:
         return
-    comic = viewers.get(reaction.message.id)
-    if comic is None:
+    comic = getServerDoc(reaction.message.guild.id, dbPath + ['viewers', str(reaction.message.id)], addOverlay=True)
+    if comic == {}:
         return
     
     if user.id != comic['user']:
@@ -89,7 +92,8 @@ async def viewerInteraction(ctx, reaction, user):
     embed.set_footer(text=response['alt'])
 
     await reaction.message.edit(embed=embed)
-    viewers.update({reaction.message.id: comic})
+    updateServerDoc(reaction.message.guild.id, comic, dbPath + ['viewers', str(reaction.message.id)])
+    #viewers.update({reaction.message.id: comic})
     await reaction.remove(user)
 
 events = [
