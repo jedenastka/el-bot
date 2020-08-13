@@ -5,7 +5,9 @@ import requests
 
 import discord
 
-async def c_weather(ctx, place):
+async def c_weather(ctx, *place):
+    place = ' '.join(place)
+
     r = requests.get('https://api.openweathermap.org/data/2.5/weather', params={'q': place, 'appid': ctx.secrets['openweathermap'], 'units': 'metric'})
     response = r.json()
 
@@ -74,7 +76,9 @@ async def c_weather(ctx, place):
     embed.set_thumbnail(url = f"https://openweathermap.org/img/wn/{icon}@2x.png")
     await ctx.send(embed=embed)
 
-async def c_aweather(ctx, place):
+async def c_aweather(ctx, *place):
+    place = ' '.join(place)
+
     r = requests.get('http://dataservice.accuweather.com/locations/v1/search', params={'apikey': ctx.secrets['accuweather'], 'q': place})
     response = r.json()[0]
 
