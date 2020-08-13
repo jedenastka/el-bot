@@ -9,8 +9,10 @@ import requests
 
 dbPath = ['plugins', 'xkcd']
 
-async def c_xkcd(ctx, comic='random'):
-    if comic == 'random':
+async def c_xkcd(ctx, *comic):
+    comic = ' '.join(comic)
+
+    if comic == 'random' or comic == '':
         r = requests.get('https://c.xkcd.com/random/comic/')
         comicId = re.search('https:\/\/xkcd.com\/(\d+)\/', r.url).group(1)
     elif comic == 'latest':
