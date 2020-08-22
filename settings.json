@@ -2,7 +2,7 @@
     "secretsFile": "secrets.json",
     "database": "el",
     "pluginDir": "plugins",
-    "initPlugins": ["utils", "logger", "codestats", "random", "info", "text", "apropo", "weather", "covid19", "xkcd", "roles", "wakatime"],
+    "initPlugins": ["utils", "logger", "codestats", "random", "info", "text", "apropo", "weather", "covid19", "xkcd", "roles", "wakatime", "levels"],
     "systemDbDefault": [
         {
             "special": "default",
