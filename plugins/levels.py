@@ -2,7 +2,7 @@ import math
 
 import discord
 
-from botutils import updateServerDoc, getServerDoc, awaitIfAwaitable
+from botutils import updateServerDoc, getServerDoc, awaitIfAwaitable, createEmbed
 
 def addXp(userId: int, serverId: int, xp: int):
     currentXp = getXp(userId, serverId)
@@ -12,7 +12,7 @@ def addXp(userId: int, serverId: int, xp: int):
 def getXp(userId: int, serverId: int):
     return getServerDoc(serverId, ['plugins', 'levels', 'xp', str(userId)])
 
-async def reevaluate(server, statusFunction=print, sendStatusEvery=100):
+async def reevaluate(server, statusFunction=print, sendStatusEvery=500):
     await awaitIfAwaitable(statusFunction, 'Initializing...')
 
     usersXp = {}
@@ -59,20 +59,24 @@ async def c_levels(ctx, user=None):
         return
     await ctx.send(f"XP: {xp}")
 
-async def c_levels_leaderboard(ctx):
+async def c_levels_leaderboard(ctx, page=1):
+    page = int(page)
+    perPage = 10
+
     usersXp = getServerDoc(ctx.message.guild.id, ['plugins', 'levels', 'xp'])
     usersXp = {k: v for k, v in sorted(usersXp.items(), key=lambda item: item[1], reverse=True)}
+
     result = ''
-    i = 1
-    for userId, xp in usersXp.items():
+    for i in range((page - 1) * perPage, page * perPage):
+        userId, xp = list(usersXp.items())[i]
         user = ctx.message.guild.get_member(int(userId))
-        result += f"[{i}] {user.name if user is not None else userId} - {xpToLevel(xp)} ({xp})\n"
+        result += f"[{i + 1}] **{user.name if user is not None else userId}**: {xpToLevel(xp)} ({xp})\n"
         i += 1
+    print(result)
     await ctx.send(result)
 
 
 async def c_levels_reeval(ctx):
-    
     statusMsg = await ctx.send('Waiting for status...')
 
     async def statusFunction(status: str):
