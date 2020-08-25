@@ -17,6 +17,37 @@ async def logDeletes(ctx):
 async def logEdits(ctx, before, after):
     log(f"[EDIT] [{datetime.datetime.now().strftime(r'%d.%m.%Y %H:%M:%S')}] [{before.channel.id} {before.author.id}] {before.content} [CHANGED TO] {after.content}")
 
+"""
+async def c_scan(ctx):
+    status = ["Initializing..."]
+    statusMsg = await ctx.send('...')
+
+    async def updateStatus():
+        await statusMsg.edit(content='```\n' + '\n'.join(status) + '\n```')
+
+    for channel in ctx.message.guild.text_channels:
+        status.append(f"Scanning channel `{channel.name}`...")
+        await updateStatus()
+
+        i = 1
+        async for message in channel.history(limit=None):
+            ctx.db['log'].insert_one({
+                'type': 'message',
+                'message': message.content,
+                'user': message.author.id,
+                'channel': message.channel.id,
+                'guild': message.guild.id,
+                'time': int(datetime.datetime.timestamp(message.created_at))
+            })
+            if i % 500 == 0:
+                status[len(status) - 1] = f"Scanning channel `{channel.name}` ({i} messages so far)..."
+                await updateStatus()
+            i += 1
+        
+        status[len(status) - 1] = f"Done scanning channel `{channel.name}`, scanned {i} messages."
+        await updateStatus()
+"""
+
 events = [
     {
         'type': 'onMessage',
@@ -30,4 +61,10 @@ events = [
         'type': 'onEdit',
         'callable': logEdits
     }
+    #{
+    #    'type': 'command',
+    #    'name': 'scan',
+    #    'aliases': [],
+    #    'callable': c_scan
+    #}
 ]
