@@ -1,6 +1,7 @@
-import discord
-
 import datetime
+import inspect
+
+import discord
 
 from instances import db
 
@@ -129,3 +130,9 @@ def createEmbed(title={'text': 'El'}, content='', color=discord.Colour(0), foote
                 embed.add_field(name=field.get('name'), value=field.get('value'), inline=field.get('inline'))
 
     return embed
+
+async def awaitIfAwaitable(function, *args, **kwargs):
+    if inspect.iscoroutinefunction(function):
+        await function(*args, **kwargs)
+    else:
+        function(*args, **kwargs)

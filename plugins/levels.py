@@ -1,7 +1,8 @@
-import discord
 import math
 
-from botutils import updateServerDoc, getServerDoc
+import discord
+
+from botutils import updateServerDoc, getServerDoc, awaitIfAwaitable
 
 def addXp(userId: int, serverId: int, xp: int):
     currentXp = getXp(userId, serverId)
@@ -11,12 +12,37 @@ def addXp(userId: int, serverId: int, xp: int):
 def getXp(userId: int, serverId: int):
     return getServerDoc(serverId, ['plugins', 'levels', 'xp', str(userId)])
 
-def xpToLevel(x):
+async def reevaluate(server, statusFunction=print, sendStatusEvery=100):
+    await awaitIfAwaitable(statusFunction, 'Initializing...')
+
+    usersXp = {}
+    for channel in server.text_channels:
+        await awaitIfAwaitable(statusFunction, f"Reevaluating channel `{channel.name}`...")
+        
+        try:
+            i = 1
+            async for message in channel.history(limit=None):
+                userId = message.author.id
+                if usersXp.get(str(userId)) is None:
+                    usersXp[str(userId)] = 0
+                usersXp[str(userId)] += len(message.content)
+                if i % sendStatusEvery == 0:
+                    await awaitIfAwaitable(statusFunction, f"Reevaluating channel `{channel.name}` ({i} ±{sendStatusEvery} messages so far)...")
+                    pass
+                i += 1
+        except discord.Forbidden:
+            pass
+
+    await awaitIfAwaitable(statusFunction, 'Writing to database...')
+    updateServerDoc(server.id, usersXp, ['plugins', 'levels', 'xp'])
+    await awaitIfAwaitable(statusFunction, 'Done!')
+
+def xpToLevel(x: int):
     base = 2
     hardness = 100
     return math.floor((x/hardness) ** (1/base))
 
-def levelToXp(x):
+def levelToXp(x: int):
     base = 2
     hardness = 100
     return (math.floor(x) ** base) * hardness
@@ -45,21 +71,14 @@ async def c_levels_leaderboard(ctx):
     await ctx.send(result)
 
 
-async def c_levels_reEval(ctx):
-    usersXp = {}
-    statusMsg = await ctx.send('Initializing...')
-    for channel in ctx.message.guild.text_channels:
-        await statusMsg.edit(content=f"Reevaluating channel `{channel.name}`...")
-        try:
-            async for message in channel.history(limit=None):
-                userId = message.author.id
-                if usersXp.get(str(userId)) is None:
-                    usersXp[str(userId)] = 0
-                usersXp[str(userId)] += len(message.content)
-        except discord.Forbidden:
-            pass
-    await statusMsg.edit(content='Done!')
-    updateServerDoc(ctx.message.guild.id, usersXp, ['plugins', 'levels', 'xp'])
+async def c_levels_reeval(ctx):
+    
+    statusMsg = await ctx.send('Waiting for status...')
+
+    async def statusFunction(status: str):
+        await statusMsg.edit(content=status)
+
+    await reevaluate(ctx.message.guild, statusFunction)
 
 async def messageLevel(ctx):
     addXp(ctx.message.author.id, ctx.message.guild.id, len(ctx.message.content))
@@ -75,7 +94,7 @@ events = [
                 'type': 'command',
                 'name': 'reeval',
                 'aliases': [],
-                'callable': c_levels_reEval
+                'callable': c_levels_reeval
             },
             {
                 'type': 'command',
