@@ -10,7 +10,8 @@ def addXp(userId: int, serverId: int, xp: int):
     updateServerDoc(serverId, xp, ['plugins', 'levels', 'xp', str(userId)])
 
 def getXp(userId: int, serverId: int):
-    return getServerDoc(serverId, ['plugins', 'levels', 'xp', str(userId)])
+    xp = getServerDoc(serverId, ['plugins', 'levels', 'xp', str(userId)])
+    return xp if xp != {} else 0
 
 async def reevaluate(server, statusFunction=print, sendStatusEvery=500):
     await awaitIfAwaitable(statusFunction, 'Initializing...')
