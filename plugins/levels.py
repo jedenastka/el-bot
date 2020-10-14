@@ -68,6 +68,9 @@ async def c_levels_leaderboard(ctx, page=1):
 
     result = ''
     for i in range((page - 1) * perPage, page * perPage):
+        if i >= len(usersXp):
+            break
+        
         userId, xp = list(usersXp.items())[i]
         user = ctx.message.guild.get_member(int(userId))
         result += f"[{i + 1}] **{user.name if user is not None else userId}**: {xpToLevel(xp)} ({xp})\n"
