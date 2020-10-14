@@ -97,7 +97,14 @@ async def c_levels_reeval(ctx):
     await reevaluate(ctx.message.guild, statusFunction)
 
 async def messageLevel(ctx):
+    oldLevel = xpToLevel(getXp(ctx.message.author.id, ctx.message.guild.id))
+    
     addXp(ctx.message.author.id, ctx.message.guild.id, len(ctx.message.content))
+    
+    newLevel = xpToLevel(getXp(ctx.message.author.id, ctx.message.guild.id))
+
+    if newLevel > oldLevel:
+        await ctx.send(f"{ctx.message.author.name} leveled up! **{oldLevel}** :arrow_right: **{newLevel}**")
 
 events = [
     {
