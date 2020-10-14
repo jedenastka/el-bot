@@ -53,7 +53,7 @@ async def c_levels(ctx, user=None):
     else:
         user = int(user)
     
-    xp = getXp(ctx.message.guild.id, user)
+    xp = getXp(user, ctx.message.guild.id)
     if xp == {}:
         await ctx.send(f"Invalid user {user}.")
         return
@@ -72,7 +72,6 @@ async def c_levels_leaderboard(ctx, page=1):
         user = ctx.message.guild.get_member(int(userId))
         result += f"[{i + 1}] **{user.name if user is not None else userId}**: {xpToLevel(xp)} ({xp})\n"
         i += 1
-    print(result)
     await ctx.send(result)
 
 
