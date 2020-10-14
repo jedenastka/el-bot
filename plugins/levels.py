@@ -37,27 +37,37 @@ async def reevaluate(server, statusFunction=print, sendStatusEvery=500):
     updateServerDoc(server.id, usersXp, ['plugins', 'levels', 'xp'])
     await awaitIfAwaitable(statusFunction, 'Done!')
 
-def xpToLevel(x: int):
+def xpToLevel(xp: int):
     base = 2
     hardness = 100
-    return math.floor((x/hardness) ** (1/base))
+    return math.floor((xp / hardness) ** (1 / base))
 
-def levelToXp(x: int):
+def levelToXp(level: int):
     base = 2
     hardness = 100
-    return (math.floor(x) ** base) * hardness
+    return (math.floor(level) ** base) * hardness
+
+def userPlace(userId: int, guildId: int):
+    usersXp = getServerDoc(guildId, ['plugins', 'levels', 'xp'])
+    usersXp = {k: v for k, v in sorted(usersXp.items(), key=lambda item: item[1], reverse=True)}
+
+    return list(usersXp.keys()).index(str(userId)) + 1
 
 async def c_levels(ctx, user=None):
     if user is None:
-        user = ctx.message.author.id
+        user = ctx.message.author
     else:
-        user = int(user)
+        userId = user
+        user = ctx.message.guild.get_member(int(userId))
+        if user is None:
+            await ctx.send(f"Invalid user {userId}.")
     
-    xp = getXp(user, ctx.message.guild.id)
+    xp = getXp(user.id, ctx.message.guild.id)
     if xp == {}:
-        await ctx.send(f"Invalid user {user}.")
+        await ctx.send(f"{user.name} is not in the database.")
         return
-    await ctx.send(f"XP: {xp}")
+    
+    await ctx.send(f"[{userPlace(user.id, ctx.message.guild.id)}] **{user.name}**: {xpToLevel(xp)} ({xp})")
 
 async def c_levels_leaderboard(ctx, page=1):
     page = int(page)
