@@ -35,7 +35,7 @@ async def logDeletes(ctx):
 async def logEdits(ctx, before, after):
     logEvent(ctx.db, 'edit', (before, after))
 
-async def c_scan(ctx):
+async def c_rescan(ctx):
     status = ['Initializing...']
     statusMsg = await ctx.send('...')
 
@@ -77,8 +77,8 @@ events = [
     },
     {
         'type': 'command',
-        'name': 'scan',
+        'name': 'rescan',
         'aliases': [],
-        'callable': c_scan
+        'callable': c_rescan
     }
 ]
