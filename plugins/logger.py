@@ -1,18 +1,12 @@
 import datetime
 import os
 
-#os.makedirs('fs/var/logger', exist_ok=True)
-
-#def log(text):
-#    print(text)
-#    with open('fs/var/logger/el.log', 'a') as logfile:
-#        logfile.write(f"{text}\n")
-
-def logEvent(eventType: str, obj):
+def logEvent(db, eventType: str, obj):
     print(obj)
     if eventType == 'message':
-        ctx.db['log'].insert_one({
+        db['log'].insert_one({
             'type': 'message',
+            'id': obj[0].id,
             'content': obj.content,
             'user': obj.author.id,
             'channel': obj.channel.id,
@@ -20,30 +14,27 @@ def logEvent(eventType: str, obj):
             'time': int(datetime.datetime.timestamp(obj.created_at))
         })
     elif eventType == 'edit':
-        ctx.db['log'].insert_one({
+        db['log'].insert_one({
             'type': 'edit',
             'id': obj[0].id,
             'content': obj[1].content,
             'time': int(datetime.datetime.timestamp(obj[1].edited_at))
         })
     elif eventType == 'delete':
-        ctx.db['log'].insert_one({
+        db['log'].insert_one({
             'type': 'delete',
             'id': obj.id,
             'time': int(datetime.datetime.now().timestamp())
         })
 
 async def logMessages(ctx):
-    logEvent('message', ctx.message)
-    #log(f"[MESSAGE] [{datetime.datetime.now().strftime(r'%d.%m.%Y %H:%M:%S')}] [{ctx.message.channel.id} {ctx.message.author.id}] {ctx.message.content}")
+    logEvent(ctx.db, 'message', ctx.message)
 
 async def logDeletes(ctx):
-    logEvent('delete', ctx.message)
-    #log(f"[DELETION] [{datetime.datetime.now().strftime(r'%d.%m.%Y %H:%M:%S')}] [{ctx.message.channel.id} {ctx.message.author.id}] {ctx.message.content}")
+    logEvent(ctx.db, 'delete', ctx.message)
 
 async def logEdits(ctx, before, after):
-    logEvent('edit', (before, after))
-    #log(f"[EDIT] [{datetime.datetime.now().strftime(r'%d.%m.%Y %H:%M:%S')}] [{before.channel.id} {before.author.id}] {before.content} [CHANGED TO] {after.content}")
+    logEvent(ctx.db, 'edit', (before, after))
 
 async def c_scan(ctx):
     status = ["Initializing..."]
