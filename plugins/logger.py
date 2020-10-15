@@ -36,11 +36,16 @@ async def logEdits(ctx, before, after):
     logEvent(ctx.db, 'edit', (before, after))
 
 async def c_scan(ctx):
-    status = ["Initializing..."]
+    status = ['Initializing...']
     statusMsg = await ctx.send('...')
 
     async def updateStatus():
         await statusMsg.edit(content='```\n' + '\n'.join(status) + '\n```')
+    
+    status.append('Deleting old entries...')
+
+    for document in ctx.db['log'].find({'type': 'message', 'guild': ctx.message.guild.id}):
+        ctx.db['log'].delete_many({'id': document['id']})
 
     for channel in ctx.message.guild.text_channels:
         status.append(f"Scanning channel `{channel.name}`...")
