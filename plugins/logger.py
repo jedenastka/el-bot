@@ -2,11 +2,10 @@ import datetime
 import os
 
 def logEvent(db, eventType: str, obj):
-    print(obj)
     if eventType == 'message':
         db['log'].insert_one({
             'type': 'message',
-            'id': obj[0].id,
+            'id': obj.id,
             'content': obj.content,
             'user': obj.author.id,
             'channel': obj.channel.id,
