@@ -86,7 +86,7 @@ events = [
     {
         'type': 'onEdit',
         'callable': logEdits
-    }
+    },
     {
         'type': 'command',
         'name': 'scan',
