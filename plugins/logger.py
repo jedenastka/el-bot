@@ -48,14 +48,7 @@ async def c_scan(ctx):
 
         i = 1
         async for message in channel.history(limit=None):
-            ctx.db['log'].insert_one({
-                'type': 'message',
-                'message': message.content,
-                'user': message.author.id,
-                'channel': message.channel.id,
-                'guild': message.guild.id,
-                'time': int(datetime.datetime.timestamp(message.created_at))
-            })
+            logEvent(ctx.db, 'message', message)
             if i % 500 == 0:
                 status[len(status) - 1] = f"Scanning channel `{channel.name}` ({i} messages so far)..."
                 await updateStatus()
