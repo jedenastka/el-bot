@@ -48,6 +48,14 @@ def levelToXp(level: int):
     hardness = 100
     return (math.floor(level) ** base) * hardness
 
+def nextLevelProgress(currentXp: int):
+    currentLevel = xpToLevel(currentXp)
+    neededXp = levelToXp(currentLevel + 1)
+    levelXp = neededXp - levelToXp(currentLevel)
+    progress = currentXp - neededXp + levelXp
+
+    return (neededXp, progress, levelXp)
+
 def userPlace(userId: int, guildId: int):
     usersXp = getServerDoc(guildId, ['plugins', 'levels', 'xp'])
     usersXp = {k: v for k, v in sorted(usersXp.items(), key=lambda item: item[1], reverse=True)}
@@ -68,7 +76,9 @@ async def c_levels(ctx, user=None):
         await ctx.send(f"{user.name} is not in the database.")
         return
     
-    await ctx.send(f"[{userPlace(user.id, ctx.message.guild.id)}] **{user.name}**: {xpToLevel(xp)} ({xp})")
+    neededXp, progress, levelXp = nextLevelProgress(getXp(ctx.message.author.id, ctx.message.guild.id))
+    
+    await ctx.send(f"[{userPlace(user.id, ctx.message.guild.id)}] **{user.name}**: {xpToLevel(xp)} ({xp}: {progress}/{levelXp})")
 
 async def c_levels_leaderboard(ctx, page=1):
     page = int(page)
@@ -84,7 +94,8 @@ async def c_levels_leaderboard(ctx, page=1):
         
         userId, xp = list(usersXp.items())[i]
         user = ctx.message.guild.get_member(int(userId))
-        result += f"[{i + 1}] **{user.name if user is not None else userId}**: {xpToLevel(xp)} ({xp})\n"
+        neededXp, progress, levelXp = nextLevelProgress(xp)
+        result += f"[{userPlace(userId, ctx.message.guild.id)}] **{user.name if user is not None else userId}**: {xpToLevel(xp)} ({xp}: {progress}/{levelXp})\n"
         i += 1
     await ctx.send(result)
 
