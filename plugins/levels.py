@@ -18,6 +18,9 @@ async def reevaluate(server, statusFunction=print, sendStatusEvery=500):
 
     usersXp = {}
     for channel in server.text_channels:
+        if channel.id in getServerDoc(server.id, ['plugins', 'levels', 'ignoredChannels']):
+            continue
+
         await awaitIfAwaitable(statusFunction, f"Reevaluating channel `{channel.name}`...")
         
         try:
