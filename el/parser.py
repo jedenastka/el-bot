@@ -53,7 +53,7 @@ def findCommand(parts):
                     return (command, parts[i:])
                 
                 break
-        if i == 1 and commands == events:
+        if commands == events:
             break
         
         i += 1
