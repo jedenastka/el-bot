@@ -116,7 +116,12 @@ async def messageLevel(ctx):
     newLevel = xpToLevel(getXp(ctx.message.author.id, ctx.message.guild.id))
 
     if newLevel > oldLevel:
-        await ctx.send(f"{ctx.message.author.name} leveled up! **{oldLevel}** :arrow_right: **{newLevel}**")
+        levelupChannelId = getServerDoc(ctx.message.guild.id, ['plugins', 'levels', 'levelupChannel'])
+        if levelupChannelId == {}:
+            levelupChannel = ctx.message.channel
+        else:
+            levelupChannel = ctx.message.guild.get_channel(levelupChannelId)
+        await levelupChannel.send(f"{ctx.message.author.name} leveled up! **{oldLevel}** :arrow_right: **{newLevel}**")
 
 events = [
     {
