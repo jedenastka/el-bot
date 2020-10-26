@@ -109,6 +109,9 @@ async def c_levels_reeval(ctx):
     await reevaluate(ctx.message.guild, statusFunction)
 
 async def messageLevel(ctx):
+    if ctx.message.channel.id in getServerDoc(ctx.message.guild.id, ['plugins', 'levels', 'ignoredChannels']):
+        return
+    
     oldLevel = xpToLevel(getXp(ctx.message.author.id, ctx.message.guild.id))
     
     addXp(ctx.message.author.id, ctx.message.guild.id, len(ctx.message.content))
