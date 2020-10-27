@@ -1,8 +1,6 @@
 async def c_ping(ctx):
     await ctx.send('Pong!')
-
-async def readyMessage(ctx):
-    print("Ready!")
+    print(f"{ctx.message.author} {ctx.message.guild.get_member(ctx.message.author.id)}")
 
 events = [
     {
@@ -10,9 +8,5 @@ events = [
         'name': 'ping',
         'aliases': ['test'],
         'callable': c_ping
-    },
-    {
-        'type': 'onReady',
-        'callable': readyMessage
     }
 ]
