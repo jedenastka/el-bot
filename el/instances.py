@@ -14,7 +14,7 @@ with open(settings['secretsFile']) as f_secrets:
 
 # Initialize Discord client
 
-bot = discord.Client()
+bot = discord.Client(intents=discord.Intents.all())
 
 # Initialize database
 
