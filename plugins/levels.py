@@ -121,7 +121,7 @@ async def messageLevel(ctx):
     
     newLevel = xpToLevel(getXp(ctx.message.author.id, ctx.message.guild.id))
 
-    if newLevel > oldLevel:
+    if newLevel > oldLevel and getServerDoc(ctx.message.guild.id, ['plugins', 'levels', 'sendLevelups']):
         levelupChannelId = getServerDoc(ctx.message.guild.id, ['plugins', 'levels', 'levelupChannel'])
         if levelupChannelId == {}:
             levelupChannel = ctx.message.channel
