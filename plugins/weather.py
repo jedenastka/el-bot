@@ -1,5 +1,6 @@
 import datetime
 import os.path
+import io
 
 import requests
 
@@ -170,6 +171,11 @@ async def c_aweather(ctx, *place):
 async def c_thunder(ctx, code='pl'):
     await ctx.send(f"http://images.blitzortung.org/Images/image_b_{code}.png?mapId={int(datetime.datetime.now().timestamp() * 1000)}")
 
+async def c_radar(ctx, region='pl'):
+    now = datetime.datetime.utcnow()
+    r = requests.get('https://pl.sat24.com/image', params={'type': 'visual', 'region': region, 'timestamp': f"{now.strftime(r'%Y%m%d%H')}{now.minute - now.minute % 15}"})
+    await ctx.send(file=discord.File(io.BytesIO(r.content), filename=f"{now.timestamp()}.jpg"))
+
 events = [
     {
         'type': 'command',
@@ -188,5 +194,11 @@ events = [
         'name': 'aweather',
         'aliases': [],
         'callable': c_aweather
+    },
+    {
+        'type': 'command',
+        'name': 'radar',
+        'aliases': [],
+        'callable': c_radar
     }
 ]
