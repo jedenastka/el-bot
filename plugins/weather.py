@@ -173,7 +173,8 @@ async def c_thunder(ctx, code='pl'):
 
 async def c_radar(ctx, region='pl'):
     now = datetime.datetime.utcnow()
-    r = requests.get('https://pl.sat24.com/image', params={'type': 'visual', 'region': region, 'timestamp': f"{now.strftime(r'%Y%m%d%H')}{'0' if now.minute < 10 else ''}{now.minute - now.minute % 15}"})
+    now -= datetime.timedelta(minutes=(now.minute + 5) % 15)
+    r = requests.get('https://pl.sat24.com/image', params={'type': 'infraPolair', 'region': region, 'timestamp': f"{now.strftime(r'%Y%m%d%H%M')}"})
     await ctx.send(file=discord.File(io.BytesIO(r.content), filename=f"{now.timestamp()}.jpg"))
 
 events = [
@@ -200,5 +201,11 @@ events = [
         'name': 'radar',
         'aliases': [],
         'callable': c_radar
+    },
+    {
+        'type': 'command',
+        'name': 'rain',
+        'aliases': [],
+        'callable': c_rain
     }
 ]
