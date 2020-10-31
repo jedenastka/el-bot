@@ -1,11 +1,16 @@
 import sys
 import re
 
-import requests
-
 import discord
 
-viewers = {}
+from botutils import getServerDoc, updateServerDoc, mergeDicts
+
+import requests
+
+dbPath = ['plugins', 'xkcd']
+
+async def c_xkcd(ctx, *comic):
+    comic = ' '.join(comic)
 
 async def c_xkcd(ctx, *comic):
     comic = ' '.join(comic)
@@ -43,43 +48,44 @@ async def c_xkcd(ctx, *comic):
     embed.set_footer(text=response['alt'])
 
     message = await ctx.send(embed=embed)
-    viewers.update({message.id: {'id': int(comicId), 'user': ctx.message.author.id}})
+    #viewers.update({message.id: {'id': int(comicId), 'user': ctx.message.author.id}})
+    updateServerDoc(ctx.message.guild.id, {**getServerDoc(ctx.message.guild.id, dbPath + ['viewers']), str(message.id): {'id': int(comicId), 'user': ctx.message.author.id}}, dbPath + ['viewers'])
     await message.add_reaction('\N{LEFTWARDS ARROW WITH HOOK}')
     await message.add_reaction('\N{LEFTWARDS BLACK ARROW}')
     await message.add_reaction('\N{TWISTED RIGHTWARDS ARROWS}')
     await message.add_reaction('\N{BLACK RIGHTWARDS ARROW}')
     await message.add_reaction('\N{RIGHTWARDS ARROW WITH HOOK}')
 
-async def viewerInteraction(ctx, reaction, user):
+async def viewerInteraction(ctx, emoji, user):
     if user.id == ctx.bot.user.id:
         return
-    comic = viewers.get(reaction.message.id)
-    if comic is None:
+    comic = getServerDoc(ctx.message.guild.id, dbPath + ['viewers', str(ctx.message.id)], addOverlay=True)
+    if comic == {}:
         return
     
     if user.id != comic['user']:
-        await reaction.remove(user)
+        await ctx.message.remove_reaction(emoji, user)
         return
 
-    if reaction.emoji == '\N{LEFTWARDS ARROW WITH HOOK}':
+    if str(emoji) == '\N{LEFTWARDS ARROW WITH HOOK}':
         comic['id'] = 1
-    elif reaction.emoji == '\N{LEFTWARDS BLACK ARROW}':
+    elif str(emoji) == '\N{LEFTWARDS BLACK ARROW}':
         comic['id'] -= 1
-    elif reaction.emoji == '\N{TWISTED RIGHTWARDS ARROWS}':
+    elif str(emoji) == '\N{TWISTED RIGHTWARDS ARROWS}':
         r = requests.get('https://c.xkcd.com/random/comic/')
         comic['id'] = int(re.search('https:\/\/xkcd.com\/(\d+)\/', r.url).group(1))
-    elif reaction.emoji == '\N{BLACK RIGHTWARDS ARROW}':
+    elif str(emoji) == '\N{BLACK RIGHTWARDS ARROW}':
         comic['id'] += 1
-    elif reaction.emoji == '\N{RIGHTWARDS ARROW WITH HOOK}':
+    elif str(emoji) == '\N{RIGHTWARDS ARROW WITH HOOK}':
         r = requests.get('https://xkcd.com/info.0.json')
         comic['id'] = r.json()['num']
     else:
-        await reaction.remove(user)
+        await ctx.message.remove_reaction(emoji, user)
         return
     
     r = requests.get(f"https://xkcd.com/{comic['id']}/info.0.json")
     if r.status_code != 200:
-        await reaction.remove(user)
+        await ctx.message.remove_reaction(emoji, user)
         return
     response = r.json()
 
@@ -90,9 +96,9 @@ async def viewerInteraction(ctx, reaction, user):
     embed.set_author(name='xkcd.com', url=f"https://xkcd.com/{comic['id']}/", icon_url='https://grzesiek11.stary.pc.pl/el/xkcd2.png')
     embed.set_footer(text=response['alt'])
 
-    await reaction.message.edit(embed=embed)
-    viewers.update({reaction.message.id: comic})
-    await reaction.remove(user)
+    await ctx.message.edit(embed=embed)
+    updateServerDoc(ctx.message.guild.id, comic, dbPath + ['viewers', str(ctx.message.id)])
+    await ctx.message.remove_reaction(emoji, user)
 
 events = [
     {

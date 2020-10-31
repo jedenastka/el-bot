@@ -2,5 +2,24 @@
     "secretsFile": "secrets.json",
     "database": "el",
     "pluginDir": "plugins",
-    "initPlugins": ["utils", "logger", "codestats", "random", "info", "text", "apropo", "weather", "covid19", "xkcd"]
+    "initPlugins": ["utils", "logger", "codestats", "random", "info", "text", "apropo", "weather", "covid19", "xkcd", "roles", "wakatime", "levels", "counting", "sudo", "core"],
+    "systemDbDefault": [
+        {
+            "special": "default",
+            "bot": {
+                "prefixes":["eb!"]
+            }
+        },
+        {
+            "special": "overlay"
+        },
+        {
+            "special": "settings",
+            "plugins": {
+                "xkcd": {
+                    "cacheHolding": 10
+                }
+            }
+        }
+    ]
 }
