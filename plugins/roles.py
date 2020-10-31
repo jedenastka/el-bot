@@ -12,11 +12,47 @@ async def c_role(ctx, *none):
             else:
                 await ctx.message.author.remove_roles(role)
 
+async def reactionRoleAdd(ctx, emoji, user):
+    reactionRoleMessages = getServerDoc(ctx.message.guild.id, dbPath + ['reactionRoles'])
+    reactionRoles = reactionRoleMessages.get(str(ctx.message.id))
+
+    if reactionRoles is None:
+        return
+
+    roleId = reactionRoles.get(str(emoji))
+    
+    if roleId is None:
+        return
+
+    await ctx.message.author.add_roles(ctx.message.guild.get_role(roleId))
+
+async def reactionRoleRemove(ctx, emoji, user):
+    reactionRoleMessages = getServerDoc(ctx.message.guild.id, dbPath + ['reactionRoles'])
+    reactionRoles = reactionRoleMessages.get(str(ctx.message.id))
+
+    if reactionRoles is None:
+        return
+
+    roleId = reactionRoles.get(str(emoji))
+    
+    if roleId is None:
+        return
+
+    await ctx.message.author.remove_roles(ctx.message.guild.get_role(roleId))
+
 events = [
     {
         'type': 'command',
         'name': 'role',
         'aliases': [],
         'callable': c_role
+    },
+    {
+        'type': 'onReaction',
+        'callable': reactionRoleAdd
+    },
+    {
+        'type': 'onReactionRemove',
+        'callable': reactionRoleRemove
     }
 ]
