@@ -64,16 +64,16 @@ async def viewerInteraction(ctx, emoji, user):
         await ctx.message.remove_reaction(emoji, user)
         return
 
-    if emoji == '\N{LEFTWARDS ARROW WITH HOOK}':
+    if str(emoji) == '\N{LEFTWARDS ARROW WITH HOOK}':
         comic['id'] = 1
-    elif emoji == '\N{LEFTWARDS BLACK ARROW}':
+    elif str(emoji) == '\N{LEFTWARDS BLACK ARROW}':
         comic['id'] -= 1
-    elif emoji == '\N{TWISTED RIGHTWARDS ARROWS}':
+    elif str(emoji) == '\N{TWISTED RIGHTWARDS ARROWS}':
         r = requests.get('https://c.xkcd.com/random/comic/')
         comic['id'] = int(re.search('https:\/\/xkcd.com\/(\d+)\/', r.url).group(1))
-    elif emoji == '\N{BLACK RIGHTWARDS ARROW}':
+    elif str(emoji) == '\N{BLACK RIGHTWARDS ARROW}':
         comic['id'] += 1
-    elif emoji == '\N{RIGHTWARDS ARROW WITH HOOK}':
+    elif str(emoji) == '\N{RIGHTWARDS ARROW WITH HOOK}':
         r = requests.get('https://xkcd.com/info.0.json')
         comic['id'] = r.json()['num']
     else:
