@@ -24,7 +24,7 @@ async def reactionRoleAdd(ctx, emoji, user):
     if roleId is None:
         return
 
-    await ctx.message.author.add_roles(ctx.message.guild.get_role(roleId))
+    await user.add_roles(ctx.message.guild.get_role(roleId))
 
 async def reactionRoleRemove(ctx, emoji, user):
     reactionRoleMessages = getServerDoc(ctx.message.guild.id, dbPath + ['reactionRoles'])
