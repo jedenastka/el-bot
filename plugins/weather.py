@@ -201,11 +201,5 @@ events = [
         'name': 'radar',
         'aliases': [],
         'callable': c_radar
-    },
-    {
-        'type': 'command',
-        'name': 'rain',
-        'aliases': [],
-        'callable': c_rain
     }
 ]
