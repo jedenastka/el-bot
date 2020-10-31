@@ -53,36 +53,36 @@ async def c_xkcd(ctx, *comic):
     await message.add_reaction('\N{BLACK RIGHTWARDS ARROW}')
     await message.add_reaction('\N{RIGHTWARDS ARROW WITH HOOK}')
 
-async def viewerInteraction(ctx, reaction, user):
+async def viewerInteraction(ctx, emoji, user):
     if user.id == ctx.bot.user.id:
         return
-    comic = getServerDoc(reaction.message.guild.id, dbPath + ['viewers', str(reaction.message.id)], addOverlay=True)
+    comic = getServerDoc(ctx.message.guild.id, dbPath + ['viewers', str(ctx.message.id)], addOverlay=True)
     if comic == {}:
         return
     
     if user.id != comic['user']:
-        await reaction.remove(user)
+        await ctx.message.remove_reaction(emoji, user)
         return
 
-    if reaction.emoji == '\N{LEFTWARDS ARROW WITH HOOK}':
+    if emoji == '\N{LEFTWARDS ARROW WITH HOOK}':
         comic['id'] = 1
-    elif reaction.emoji == '\N{LEFTWARDS BLACK ARROW}':
+    elif emoji == '\N{LEFTWARDS BLACK ARROW}':
         comic['id'] -= 1
-    elif reaction.emoji == '\N{TWISTED RIGHTWARDS ARROWS}':
+    elif emoji == '\N{TWISTED RIGHTWARDS ARROWS}':
         r = requests.get('https://c.xkcd.com/random/comic/')
         comic['id'] = int(re.search('https:\/\/xkcd.com\/(\d+)\/', r.url).group(1))
-    elif reaction.emoji == '\N{BLACK RIGHTWARDS ARROW}':
+    elif emoji == '\N{BLACK RIGHTWARDS ARROW}':
         comic['id'] += 1
-    elif reaction.emoji == '\N{RIGHTWARDS ARROW WITH HOOK}':
+    elif emoji == '\N{RIGHTWARDS ARROW WITH HOOK}':
         r = requests.get('https://xkcd.com/info.0.json')
         comic['id'] = r.json()['num']
     else:
-        await reaction.remove(user)
+        await ctx.message.remove_reaction(emoji, user)
         return
     
     r = requests.get(f"https://xkcd.com/{comic['id']}/info.0.json")
     if r.status_code != 200:
-        await reaction.remove(user)
+        await ctx.message.remove_reaction(emoji, user)
         return
     response = r.json()
 
@@ -93,10 +93,9 @@ async def viewerInteraction(ctx, reaction, user):
     embed.set_author(name='xkcd.com', url=f"https://xkcd.com/{comic['id']}/", icon_url='https://grzesiek11.stary.pc.pl/el/xkcd2.png')
     embed.set_footer(text=response['alt'])
 
-    await reaction.message.edit(embed=embed)
-    updateServerDoc(reaction.message.guild.id, comic, dbPath + ['viewers', str(reaction.message.id)])
-    #viewers.update({reaction.message.id: comic})
-    await reaction.remove(user)
+    await ctx.message.edit(embed=embed)
+    updateServerDoc(ctx.message.guild.id, comic, dbPath + ['viewers', str(ctx.message.id)])
+    await ctx.message.remove_reaction(emoji, user)
 
 events = [
     {
