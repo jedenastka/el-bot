@@ -175,7 +175,7 @@ async def c_radar(ctx, region='pl'):
     now = datetime.datetime.utcnow()
     now -= datetime.timedelta(minutes=(now.minute + 5) % 15)
     r = requests.get('https://pl.sat24.com/image', params={'type': 'infraPolair', 'region': region, 'timestamp': f"{now.strftime(r'%Y%m%d%H%M')}"})
-    await ctx.send(file=discord.File(io.BytesIO(r.content), filename=f"{now.timestamp()}.jpg"))
+    await ctx.send(file=discord.File(io.BytesIO(r.content), filename=f"{int(now.timestamp())}.jpg"))
 
 events = [
     {
