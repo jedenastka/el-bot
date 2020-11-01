@@ -38,7 +38,7 @@ async def reactionRoleRemove(ctx, emoji, user):
     if roleId is None:
         return
 
-    await ctx.message.author.remove_roles(ctx.message.guild.get_role(roleId))
+    await user.remove_roles(ctx.message.guild.get_role(roleId))
 
 events = [
     {
