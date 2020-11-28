@@ -177,6 +177,11 @@ async def c_radar(ctx, region='pl'):
     r = requests.get('https://pl.sat24.com/image', params={'type': 'infraPolair', 'region': region, 'timestamp': f"{now.strftime(r'%Y%m%d%H%M')}"})
     await ctx.send(file=discord.File(io.BytesIO(r.content), filename=f"{int(now.timestamp())}.jpg"))
 
+async def c_snow(ctx):
+    now = datetime.datetime.utcnow()
+    r = requests.get('http://zoz.cbk.waw.pl/images/stories/snow/mapa_duza.png')
+    await ctx.send(file=discord.File(io.BytesIO(r.content), filename='snow.png'))
+
 events = [
     {
         'type': 'command',
@@ -201,5 +206,11 @@ events = [
         'name': 'radar',
         'aliases': [],
         'callable': c_radar
+    },
+    {
+        'type': 'command',
+        'name': 'snow',
+        'aliases': [],
+        'callable': c_snow
     }
 ]
